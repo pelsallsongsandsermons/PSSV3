@@ -1,0 +1,87 @@
+/**
+ * Data Service
+ * Handles all database interactions
+ */
+import { CONFIG } from '../config.js';
+
+export class DataService {
+    constructor() {
+        this.supabase = window.app.supabase.getClient();
+    }
+
+    // --- Songs ---
+    async getSongs() {
+        // Table: "songsList" (Strict CamelCase as requested)
+        const { data, error } = await this.supabase
+            .from('songsList')
+            .select('*')
+            .order('songTitle', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching songs from songsList:', error);
+            return [];
+        }
+        return data;
+    }
+
+
+    // --- Sermons ---
+    async getRecentSermons(limit = 20) {
+        // Table: "sermonList"
+        const { data, error } = await this.supabase
+            .from('sermonList')
+            .select('*')
+            .order('date', { ascending: false }) // Assuming date is sortable
+            .limit(limit);
+
+        if (error) {
+            console.error('Error fetching sermons:', error);
+            return [];
+        }
+        return data;
+    }
+
+    async getSermonsBySeries(seriesTag) {
+        if (!seriesTag) return [];
+
+        const { data, error } = await this.supabase
+            .from('sermonList')
+            .select('*')
+            .eq('episode_tag', seriesTag) // Relationship defined by user
+            .order('publish_time', { ascending: false }); // Corrected column name based on schema
+
+        if (error) {
+            console.error('Error fetching sermons in series:', error);
+            return [];
+        }
+        return data;
+    }
+
+    async searchSermons(query) {
+        if (!query) return [];
+        const { data, error } = await this.supabase
+            .from('sermonList')
+            .select('*')
+            .ilike('title', `%${query}%`);
+
+        if (error) return [];
+        return data;
+    }
+
+    // --- Series ---
+    async getBookSeries() {
+        const { data, error } = await this.supabase
+            .from('bookSeries')
+            .select('*')
+            .order('sequence', { ascending: true });
+        return data || [];
+    }
+
+    async getTopicSeries() {
+        const { data, error } = await this.supabase
+            .from('topicSeries')
+            .select('*')
+            .order('sequence', { ascending: true });
+        return data || [];
+    }
+}
