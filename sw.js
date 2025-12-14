@@ -2,7 +2,7 @@
  * Service Worker
  * Handles caching and offline functionality
  */
-const CACHE_NAME = 'pssv3-cache-v5';
+const CACHE_NAME = 'v3.1.027';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

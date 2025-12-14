@@ -13,7 +13,27 @@ export class Router {
             'song-player': () => import('./views/song-player-view.js'),
         };
         this.contentContainer = document.getElementById('app-content');
-        this.navItems = document.querySelectorAll('.nav-item');
+
+        // Initialize Back Button
+        this.backBtn = document.getElementById('global-back-btn');
+        if (this.backBtn) {
+            this.backBtn.addEventListener('click', () => {
+                const currentHash = window.location.hash;
+                if (currentHash === '#home' || !currentHash) {
+                    return; // Do nothing on home
+                }
+
+                // Simple history back, or fallback to home if external entry
+                if (window.history.length > 2) {
+                    // > 2 because: 1 is initial, 2 is current page. 
+                    // Actually checking history length is unreliable in some browsers.
+                    window.history.back();
+                } else {
+                    // Fallback to home
+                    window.location.hash = '#home';
+                }
+            });
+        }
     }
 
     init() {
@@ -27,14 +47,19 @@ export class Router {
 
         const params = new URLSearchParams(queryString);
 
-        // Update Nav
-        this.navItems.forEach(item => {
-            if (item.getAttribute('href') === `#${route}`) {
-                item.classList.add('active');
+        // Update Back Button Visibility
+        if (this.backBtn) {
+            console.log('Router: Updating back button for route:', route);
+            if (route === 'home') {
+                this.backBtn.classList.add('hidden');
+                console.log('Router: Hiding back button');
             } else {
-                item.classList.remove('active');
+                this.backBtn.classList.remove('hidden');
+                console.log('Router: Showing back button');
             }
-        });
+        } else {
+            console.error('Router: Back button element not found!');
+        }
 
         // Load View
         const viewLoader = this.routes[route];
