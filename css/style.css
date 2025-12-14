@@ -1,20 +1,25 @@
 :root {
-    /* Flutter Default Light Theme Colors (approx) */
-    --primary-color: #4B39EF;
-    /* FlutterFlow primary usually */
-    --secondary-color: #39D2C0;
-    --tertiary-color: #EE8B60;
-    --alternate-color: #E0E3E7;
+    /* Legacy App Colors */
+    --primary-color: #6200EE;
+    /* Deep Purple */
+    --primary-dark: #3700B3;
+    --accent-color: #03DAC6;
+    /* Teal Accent */
 
-    --primary-text: #14181B;
-    --secondary-text: #57636C;
-    --primary-background: #F1F4F8;
-    --secondary-background: #FFFFFF;
+    --primary-text: #FFFFFF;
+    /* White text on dark bg */
+    --secondary-text: #B0BEC5;
+    /* Light Grey */
+    --primary-background: #1F4E5F;
+    /* Dark Teal Body Background */
+    --secondary-background: #263238;
+    /* Darker Card Background */
+    --header-background: #6200EE;
+    /* Purple Header */
 
-    --nav-height: 70px;
-    /* Taller nav */
+    --nav-height: 60px;
     --player-height: 80px;
-    --header-height: 70px;
+    --header-height: 60px;
 }
 
 * {
@@ -43,21 +48,22 @@ body {
 /* Header */
 #main-header {
     height: var(--header-height);
-    background-color: var(--secondary-background);
+    background-color: var(--header-background);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    /* Softer shadow */
+    padding: 0 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 10;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: none;
+    color: white;
 }
 
 .logo-area {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .logo {
@@ -75,16 +81,15 @@ body {
 }
 
 .header-text h1 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--primary-text);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: white;
     line-height: 1.2;
 }
 
 .header-text h2 {
-    font-size: 0.75rem;
-    font-weight: 400;
-    color: var(--secondary-text);
+    display: none;
+    /* Legacy app doesn't seem to have subtitle in header */
 }
 
 .version-badge {
@@ -298,139 +303,129 @@ body {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Cards & Grid */
-.home-menu-row {
-    display: flex;
-    justify-content: space-between;
-    /* Space out the 5 items */
-    gap: 8px;
-    margin-top: 24px;
-    overflow-x: auto;
-    /* Allow scroll on small screens */
-    padding-bottom: 10px;
-}
+/* --- Home Page Specifics --- */
 
-.home-menu-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: var(--primary-text);
-    gap: 8px;
-    min-width: 60px;
-}
-
-.home-icon-circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--secondary-background);
-    /* Or specific colors per item */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: var(--secondary-text);
-}
-
-/* Specific Home Icon Colors (Guessing from description) */
-.home-icon-circle.live {
-    color: #FF5963;
-}
-
-.home-icon-circle.songs {
-    color: #39D2C0;
-}
-
-.home-icon-circle.sermons {
-    color: #4B39EF;
-}
-
-.home-icon-circle.books {
-    color: #EE8B60;
-}
-
-.home-icon-circle.topics {
-    color: #249689;
-}
-
-
-.home-menu-item span {
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-align: center;
-}
-
-/* Latest Sermon Card */
-.latest-sermon-card {
-    background-color: var(--secondary-background);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.latest-sermon-image {
+.hero-section {
     width: 100%;
-    height: 180px;
-    background-color: #e0e0e0;
+    height: 200px;
     background-size: cover;
     background-position: center;
+    margin-bottom: 20px;
     position: relative;
 }
 
-.latest-sermon-content {
-    padding: 16px;
-}
-
-.latest-sermon-tag {
-    font-size: 0.7rem;
-    color: var(--primary-color);
-    font-weight: 600;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-}
-
-.latest-sermon-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary-text);
-    margin-bottom: 8px;
-}
-
-.latest-sermon-speaker {
-    font-size: 0.85rem;
-    color: var(--secondary-text);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.series-grid {
+/* Home Action Buttons Grid */
+.home-actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
-    margin-top: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0 10px;
 }
 
-.series-card {
-    background-color: var(--secondary-background);
-    padding: 16px;
+.home-action-btn {
+    background-color: #263238;
+    /* Dark Card Bg */
+    border: 2px solid #4DB6AC;
+    /* Teal Border */
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-}
-
-.series-title {
+    color: white;
+    padding: 10px 4px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
     font-weight: 600;
-    color: var(--primary-text);
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s;
 }
 
-.series-dates {
+.home-action-btn:active {
+    background-color: #37474F;
+}
+
+/* Section Header */
+.section-header {
+    border: 1px solid white;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    margin: 0 10px 15px 10px;
+}
+
+.section-title-bar {
+    background-color: #263238;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    font-weight: 700;
+    border-bottom: 1px solid white;
+}
+
+.section-content {
+    padding: 10px;
+}
+
+/* Series Cards (Horizontal layout in section) */
+.series-card-home {
+    display: flex;
+    background-color: #1A1D21;
+    /* Slightly darker than section? */
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.series-card-home img {
+    width: 100px;
+    /* Small Rectangle */
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 8px;
+}
+
+.series-card-home .info {
+    flex: 1;
+    padding: 8px 0;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.series-card-home .info h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.series-card-home .info p {
+    margin: 0;
     font-size: 0.8rem;
-    color: var(--secondary-text);
-    margin-top: 4px;
+    color: #B0BEC5;
+}
+
+/* Footer Info Box */
+.footer-info-box {
+    border: 1px solid white;
+    border-radius: 6px;
+    padding: 8px;
+    margin: 20px 10px;
+    text-align: center;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.home-footer-text {
+    text-align: center;
+    padding: 20px;
+    color: #B0BEC5;
+    font-style: italic;
+    font-size: 0.9rem;
 }
 
 /* Song Player View */

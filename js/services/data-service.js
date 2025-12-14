@@ -77,6 +77,20 @@ export class DataService {
         return data || [];
     }
 
+    async getCurrentSeries() {
+        const { data, error } = await this.supabase
+            .from('bookSeries')
+            .select('*')
+            .eq('current', true)
+            .order('sequence', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching current series:', error);
+            return [];
+        }
+        return data || [];
+    }
+
     async getTopicSeries() {
         const { data, error } = await this.supabase
             .from('topicSeries')
