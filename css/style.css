@@ -419,12 +419,16 @@ body {
 
 /* Song Player View */
 .song-player-view {
-    background-color: #262936;
+    background-color: black;
     /* Dark background from screenshot */
-    min-height: 100vh;
-    padding: 0 !important;
+    min-height: calc(100vh - 60px);
+    /* Adjust for header */
+    padding: 8px !important;
     /* Reset padding for this view */
     color: white;
+    /* Break out of container padding */
+    margin: -16px;
+    width: calc(100% + 32px);
 }
 
 .song-player-header {
@@ -455,6 +459,7 @@ body {
     background-color: #2F3342;
     padding: 12px 16px;
     border-bottom: 2px solid white;
+    margin-bottom: 20px;
 }
 
 .song-banner h2 {
@@ -469,16 +474,17 @@ body {
 
 .slide-wrapper {
     background-color: white;
-    /* border-radius: 12px; Removed to edges */
+    border-radius: 12px;
+    /* Rounded edges restored */
     overflow: hidden;
     position: relative;
     /* padding-top: 56.25%; Removed legacy hack */
     aspect-ratio: 16/9;
-    border-bottom: 2px solid #333;
-    /* Only bottom border needed visually if full width */
+    border-bottom: none;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Controls Scoped Styles */
@@ -498,10 +504,10 @@ body {
     background: rgba(0, 0, 0, 0.3);
     color: white;
     border: none;
-    width: 40px;
+    width: 32px;
     /* Small but touchable */
-    height: 40px;
-    font-size: 1.2rem;
+    height: 32px;
+    font-size: 1rem;
     position: absolute;
     bottom: 0;
     display: flex;
@@ -537,7 +543,7 @@ body {
     border: 1px solid white;
     padding: 10px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 0.65rem;
     text-align: center;
     background: rgba(0, 0, 0, 0.3);
 }
