@@ -93,15 +93,15 @@ export default {
                 <!-- Lyrics/Slides Container -->
                 <div class="lyrics-container">
                     ${fileId ? `
-                        <div class="slide-wrapper" id="slide-wrapper-container" data-file-id="${fileId}" style="position: relative; background: white;">
+                        <div class="slide-wrapper" id="slide-wrapper-container" data-file-id="${fileId}">
                              <canvas id="pdf-canvas" style="width: 100%; display: block;"></canvas>
                              <div id="pdf-loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666;">
                                 Loading Slides...
                              </div>
                              
-                             <div class="pdf-controls" style="position: absolute; bottom: 10px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; pointer-events: none;">
-                                <button id="prev-slide-btn" style="pointer-events: auto; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem;">❮</button>
-                                <button id="next-slide-btn" style="pointer-events: auto; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem;">❯</button>
+                             <div class="pdf-controls-container">
+                                <button id="prev-slide-btn" class="slide-nav-btn prev">❮</button>
+                                <button id="next-slide-btn" class="slide-nav-btn next">❯</button>
                              </div>
                         </div>
                     ` : '<div class="no-content">No lyrics available</div>'}
