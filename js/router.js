@@ -61,6 +61,12 @@ export class Router {
             console.error('Router: Back button element not found!');
         }
 
+        // Reset Header Title to default (Views can override this)
+        const headerTitle = document.querySelector('#main-header h1');
+        if (headerTitle) {
+            headerTitle.textContent = 'Pelsall Songs and Sermons';
+        }
+
         // Load View
         const viewLoader = this.routes[route];
         if (viewLoader) {

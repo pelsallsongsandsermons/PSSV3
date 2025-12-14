@@ -18,7 +18,17 @@ export default {
         const createSeriesCard = (series) => {
             // Map DB columns to UI fields
             // "seriesTitle" and "seriesGraphic" are the columns in bookSeries
-            const imgUrl = series.seriesGraphic || series.artUri || 'assets/images/PechLogoRound.png';
+            let imgUrl = series.seriesGraphic || series.artUri || 'assets/images/PechLogoRound.png';
+
+            // Check if imgUrl is a Google Drive ID (contains no slashes and looks like an ID)
+            // or explicitly fix known relative paths if any.
+            // Google IDs usually alphanumeric, - and _.
+            if (imgUrl && !imgUrl.includes('/') && !imgUrl.startsWith('http')) {
+                // Use wsrv.nl (caching proxy) to bypass Google Drive rate limits
+                // We pass the standard Google Drive link to it.
+                imgUrl = `https://wsrv.nl/?url=https://drive.google.com/uc?id=${imgUrl}&w=800&output=jpg`;
+            }
+
             const title = series.seriesTitle || series.title || 'Unknown Series';
 
             // "series_tag" (bookSeries) vs "SeriesTag" (topicSeries)

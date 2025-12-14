@@ -2,7 +2,7 @@
  * Service Worker
  * Handles caching and offline functionality
  */
-const CACHE_NAME = 'v3.1.027';
+const CACHE_NAME = 'v3.1.037';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -12,7 +12,9 @@ const ASSETS_TO_CACHE = [
     '/js/version.js',
     '/js/router.js',
     '/js/services/supabase-client.js',
-    '/manifest.json'
+    '/manifest.json',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 ];
 
 // Install Event
@@ -65,6 +67,11 @@ self.addEventListener('fetch', (event) => {
                     cache.put(event.request, responseToCache);
                 });
                 return networkResponse;
+            }).catch((err) => {
+                // Network failure or other fetch error
+                console.warn('[ServiceWorker] Fetch failed:', err);
+                // Optionally return a fallback image or offline page here
+                return new Response('Network error happening', { status: 408, headers: { 'Content-Type': 'text/plain' } });
             });
             return cachedResponse || fetchPromise;
         })
