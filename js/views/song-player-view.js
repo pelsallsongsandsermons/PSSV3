@@ -54,30 +54,17 @@ export default {
 
         // --- 2. YouTube ---
         // User confirmed 'youtube_url' column contains the Video ID (e.g., "DswWiHUwYjw")
-        let youtubeEmbedUrl = '';
+        let videoId = '';
         if (youtubeUrl && youtubeUrl !== 'emptyUrl') {
-            const videoId = youtubeUrl.trim();
-
-            // Construct the Embed URL
-            // Format: https://www.youtube.com/embed/[VIDEO_ID]
-            const start = song.startAt || 0;
-            const end = song.endAt || '';
-
-            // Legacy uses autoplay=1. We match it EXACTLY.
-            // Legacy URL: https://www.youtube.com/embed/${videoId}?start=${start}&end=${end}&autoplay=1
-            // We put autoplay last to match legacy structure if strictness matters, though order shouldn't.
-            // Using: .../embed/${videoId}?start=${start}...&autoplay=1 (Legacy order seems to be start/end/autoplay)
-
-            let params = `start=${start}`;
-            if (end) params += `&end=${end}`;
-            params += '&autoplay=1';
-
-            youtubeEmbedUrl = `https://www.youtube.com/embed/${videoId}?${params}`;
+            videoId = youtubeUrl.trim();
         }
 
+        const start = song.startAt || 0;
+        const end = song.endAt || '';
+
         // Launch URL for external app
-        const launchUrl = youtubeUrl && youtubeUrl !== 'emptyUrl'
-            ? `https://www.youtube.com/watch?v=${youtubeUrl.trim()}${song.startAt ? `&t=${song.startAt}s` : ''}`
+        const launchUrl = videoId
+            ? `https://www.youtube.com/watch?v=${videoId}${song.startAt ? `&t=${song.startAt}s` : ''}`
             : '#';
 
         return `
@@ -113,14 +100,12 @@ export default {
 
                 <!-- YouTube Container -->
                 <div class="youtube-container">
-                    ${youtubeEmbedUrl ? `
-                        <iframe 
-                            src="${youtubeEmbedUrl}" 
-                            title="YouTube video player" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                        </iframe>
+                    ${videoId ? `
+                        <div id="yt-player-placeholder" 
+                             data-video-id="${videoId}" 
+                             data-start="${start}" 
+                             data-end="${end}">
+                        </div>
                          <a href="${launchUrl}" target="_blank" class="yt-launch-btn">
                             <i class="fas fa-external-link-alt"></i>
                         </a>
@@ -139,7 +124,58 @@ export default {
         const footer = document.getElementById('player-footer');
         if (footer) footer.classList.add('hidden');
 
-        // 3. PDF Logic
+        // 3. YouTube API Logic
+        const ytPlaceholder = document.getElementById('yt-player-placeholder');
+        if (ytPlaceholder) {
+            const videoId = ytPlaceholder.dataset.videoId;
+            const start = parseInt(ytPlaceholder.dataset.start) || 0;
+            const end = parseInt(ytPlaceholder.dataset.end) || undefined;
+
+            if (videoId) {
+                // Define the init function
+                const initPlayer = () => {
+                    new YT.Player('yt-player-placeholder', {
+                        height: '100%',
+                        width: '100%',
+                        videoId: videoId,
+                        playerVars: {
+                            'playsinline': 1,
+                            'autoplay': 1,
+                            'start': start,
+                            'end': end
+                        },
+                        events: {
+                            'onStateChange': (event) => {
+                                // YT.PlayerState.ENDED is 0
+                                if (event.data === 0) {
+                                    console.log('Video ended. Navigating back.');
+                                    // Use router history or window.history
+                                    window.history.back();
+                                }
+                            }
+                        }
+                    });
+                };
+
+                // Load API if not present
+                if (!window.YT) {
+                    const tag = document.createElement('script');
+                    tag.src = "https://www.youtube.com/iframe_api";
+                    const firstScriptTag = document.getElementsByTagName('script')[0];
+                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                    // API will call this global function when ready
+                    window.onYouTubeIframeAPIReady = () => {
+                        initPlayer();
+                    };
+                } else if (window.YT && window.YT.Player) {
+                    // API already loaded
+                    initPlayer();
+                }
+            }
+        }
+
+        // 4. PDF Logic
         const slideWrapper = document.getElementById('slide-wrapper-container');
         const canvas = document.getElementById('pdf-canvas');
         const loadingIndicator = document.getElementById('pdf-loading');
