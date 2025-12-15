@@ -1,69 +1,175 @@
 import { DataService } from '../services/data-service.js';
 
+let currentSermons = [];
+let isDescending = true; // Default: Latest first
+
 export default {
     render: async (params) => {
-        const title = params.get('title');
-        const type = params.get('type');
-        const tag = params.get('tag');
+        const title = params.get('title') || '';
+        const tag = params.get('tag') || '';
+        const type = params.get('type') || 'book'; // 'book' or 'topic'
 
         const dataService = new DataService();
-        // Fallback title for display
-        const displayTitle = title ? decodeURIComponent(title) : 'Series Details';
 
-        // Fetch Sermons
+        // 1. Fetch Series Metadata to get Image and Dates
+        // We know the tag/title, we need to find the series object from the lists
+        let seriesObj = null;
+        if (type === 'book') {
+            const books = await dataService.getBookSeries();
+            // Try matching by tag first (more robust), then title
+            seriesObj = books.find(s => s.series_tag === tag) || books.find(s => s.seriesTitle === title);
+        } else {
+            const topics = await dataService.getTopicSeries();
+            seriesObj = topics.find(s => s.SeriesTag === tag) || topics.find(s => s.seriesTitle === title);
+        }
+
+        // 2. Fetch Sermons
         const sermons = await dataService.getSermonsBySeries(tag);
 
-        let listHtml = '';
-        if (sermons.length === 0) {
-            listHtml = `<div class="view"><p class="error-msg" style="text-align:center; margin-top:50px;">No sermons found for this series.</p></div>`;
-        } else {
-            listHtml = sermons.map(sermon => `
-            <div class="list-item sermon-item"
-                 data-url="${sermon.permalink_url || ''}" 
-                 data-title="${sermon.title}" 
-                 data-artist="${sermon.speaker || ''}">
-                <div class="item-icon">
-                    <i class="fas fa-microphone"></i>
-                </div>
-                <div class="item-content">
-                    <div class="item-title">${sermon.title}</div>
-                    <div class="item-subtitle">${sermon.speaker} • ${new Date(sermon.date).toLocaleDateString()}</div>
-                </div>
-                <i class="fas fa-play-circle" style="color:var(--primary-color); opacity:0.8;"></i>
-            </div>
-        `).join('');
+        // Pre-process dates for robust sorting
+        // Format: "DD MMM YYYY" (e.g. "21 Feb 2021")
+        currentSermons = sermons.map(s => {
+            return {
+                ...s,
+                _timestamp: new Date(s.date).getTime()
+            };
+        });
+
+        // 3. Initial Sort (Descending)
+        isDescending = true;
+        sortSermons();
+
+        // 4. Prepare Header Data
+        const displayTitle = seriesObj ? (seriesObj.seriesTitle || seriesObj.title) : (title || 'Series Details');
+        const subtitle = seriesObj ? (seriesObj.series_tag || '') : ''; // e.g. "Strength in weakness"
+
+        let imgUrl = seriesObj ? (seriesObj.seriesGraphic || seriesObj.artUri) : '';
+        if (imgUrl && !imgUrl.includes('/') && !imgUrl.startsWith('http')) {
+            imgUrl = `https://wsrv.nl/?url=https://drive.google.com/uc?id=${imgUrl}&w=400&output=jpg`;
+        } else if (!imgUrl) {
+            imgUrl = 'assets/images/PechLogoRound.png';
         }
+
+        const dateRange = seriesObj ? `${seriesObj.dateFrom || ''} - ${seriesObj.dateTo || ''}` : '';
 
         return `
             <div class="view series-details-view">
-                <div class="header-back">
-                    <a href="#series" class="back-link">← Back to Series</a>
+                <!-- Header -->
+                <div class="series-details-header">
+                    <div class="header-content">
+                        <h2>${displayTitle}</h2>
+                        <h4 class="series-subtitle">${subtitle}</h4>
+                        
+                        <div class="header-meta">
+                            <div class="meta-img" style="background-image: url('${imgUrl}')"></div>
+                            <div class="meta-text">
+                                <span class="date-range">${dateRange}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="sort-btn" class="sort-btn" title="Reverse Sort Order">
+                        <i class="fas fa-sort"></i>
+                    </button>
                 </div>
-                <h2>${displayTitle}</h2>
-                <div class="list-container">
-                    ${listHtml}
+
+                <!-- List -->
+                <div class="list-container" id="sermons-list-container">
+                    ${generateListHtml()}
                 </div>
             </div>
         `;
     },
+
     afterRender: () => {
-        const list = document.querySelector('.series-details-view .list-container');
-        if (!list) return;
-
-        list.querySelectorAll('.sermon-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const url = item.dataset.url;
-                const title = item.dataset.title;
-                const artist = item.dataset.artist;
-
-                if (url) {
-                    // Open Sermon on Podbean directly
-                    const podbeanUrl = `https://pecharchive.podbean.com/e/${url}`;
-                    window.open(podbeanUrl, '_blank');
-                } else {
-                    alert('No audio URL for this sermon');
-                }
+        // 1. Sort Button Listener
+        const sortBtn = document.getElementById('sort-btn');
+        if (sortBtn) {
+            sortBtn.addEventListener('click', () => {
+                isDescending = !isDescending;
+                sortSermons();
+                updateList();
             });
-        });
+        }
+
+        // 2. Item Click Listeners
+        addClickListeners();
     }
+}
+
+// --- Helpers ---
+
+function sortSermons() {
+    currentSermons.sort((a, b) => {
+        return isDescending
+            ? b._timestamp - a._timestamp
+            : a._timestamp - b._timestamp;
+    });
+}
+
+function generateListHtml() {
+    if (currentSermons.length === 0) {
+        return `<p class="error-msg" style="text-align:center; margin-top:50px; color:#aaa;">No sermons found for this series.</p>`;
+    }
+
+    // Determine Base Index logic
+    // Create a map of rank by date
+    const sortedByDateAsc = [...currentSermons].sort((a, b) => a._timestamp - b._timestamp);
+    const rankMap = new Map();
+    sortedByDateAsc.forEach((s, i) => {
+        rankMap.set(s.id, i + 1);
+    });
+
+    return currentSermons.map(sermon => {
+        // Get generic rank
+        const index = rankMap.get(sermon.id);
+        const formattedIndex = index.toString().padStart(2, '0');
+
+        // Strip existing leading numbering if present (e.g. "01 - Title")
+        const cleanTitle = sermon.title.replace(/^\d+\s*-\s*/, '').trim();
+
+        return `
+            <div class="sermon-card-dark"
+                 data-url="${sermon.permalink_url || ''}" 
+                 data-title="${cleanTitle}" 
+                 data-artist="${sermon.speaker || ''}">
+                 
+                <div class="card-left">
+                    <span class="sermon-index">${formattedIndex}</span>
+                    <span class="separator">-</span>
+                    <span class="sermon-title-text">${cleanTitle}</span>
+                </div>
+                
+                <div class="card-right">
+                    <i class="fas fa-tv monitor-icon"></i>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateList() {
+    const listContainer = document.getElementById('sermons-list-container');
+    if (listContainer) {
+        listContainer.innerHTML = generateListHtml();
+        addClickListeners();
+    }
+}
+
+function addClickListeners() {
+    const list = document.getElementById('sermons-list-container');
+    if (!list) return;
+
+    list.querySelectorAll('.sermon-card-dark').forEach(item => {
+        item.addEventListener('click', () => {
+            const url = item.dataset.url;
+            if (url) {
+                // Open Sermon on Podbean logic matches legacy behavior
+                const podbeanUrl = `https://pecharchive.podbean.com/e/${url}`;
+                window.open(podbeanUrl, '_blank');
+            } else {
+                alert('No audio URL for this sermon');
+            }
+        });
+    });
 }

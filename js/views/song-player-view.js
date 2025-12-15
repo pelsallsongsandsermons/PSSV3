@@ -150,6 +150,12 @@ export default {
                         events: {
                             'onReady': (event) => {
                                 event.target.playVideo();
+                                // Retry for iOS 
+                                setTimeout(() => {
+                                    if (event.target.getPlayerState() !== 1) { // 1 = PLAYING
+                                        event.target.playVideo();
+                                    }
+                                }, 1000);
                             },
                             'onStateChange': (event) => {
                                 // YT.PlayerState.ENDED is 0
