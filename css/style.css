@@ -499,6 +499,35 @@ body {
     z-index: 10;
 }
 
+/* --- Responsive Player Layout --- */
+
+/* Default: Stacked (Portrait / Mobile) */
+.player-content-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Landscape (Tablet/Desktop) - Side by Side */
+@media (min-width: 768px) and (orientation: landscape) {
+    .player-content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        /* Split screen */
+        gap: 20px;
+        align-items: start;
+        /* Top align */
+        height: 100%;
+        /* Try to use full height */
+    }
+
+    .song-player-view {
+        /* When in landscape grid, we might want to restrict scrolling */
+        overflow-y: auto;
+    }
+}
+
 .slide-nav-btn {
     pointer-events: auto;
     background: rgba(0, 0, 0, 0.3);

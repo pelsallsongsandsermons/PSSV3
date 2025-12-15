@@ -77,39 +77,42 @@ export default {
                     <h2>${song.songTitle.toUpperCase()}</h2>
                 </div>
 
-                <!-- Lyrics/Slides Container -->
-                <div class="lyrics-container">
-                    ${fileId ? `
-                        <div class="slide-wrapper" id="slide-wrapper-container" data-file-id="${fileId}">
-                             <canvas id="pdf-canvas" style="width: 100%; display: block;"></canvas>
-                             <div id="pdf-loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666;">
-                                Loading Slides...
-                             </div>
-                             
-                             <div class="pdf-controls-container">
-                                <button id="prev-slide-btn" class="slide-nav-btn prev">❮</button>
-                                <button id="next-slide-btn" class="slide-nav-btn next">❯</button>
-                             </div>
+                <!-- Content Grid Wrapper -->
+                <div class="player-content-grid">
+                    <!-- Lyrics/Slides Container -->
+                    <div class="lyrics-container">
+                        ${fileId ? `
+                            <div class="slide-wrapper" id="slide-wrapper-container" data-file-id="${fileId}">
+                                 <canvas id="pdf-canvas" style="width: 100%; display: block;"></canvas>
+                                 <div id="pdf-loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666;">
+                                    Loading Slides...
+                                 </div>
+                                 
+                                 <div class="pdf-controls-container">
+                                    <button id="prev-slide-btn" class="slide-nav-btn prev">❮</button>
+                                    <button id="next-slide-btn" class="slide-nav-btn next">❯</button>
+                                 </div>
+                            </div>
+                        ` : '<div class="no-content">No lyrics available</div>'}
+                        
+                        <div class="attribution-box">
+                            <p>${song.copyRight || 'Copyright info not available'}</p>
                         </div>
-                    ` : '<div class="no-content">No lyrics available</div>'}
-                    
-                    <div class="attribution-box">
-                        <p>${song.copyRight || 'Copyright info not available'}</p>
                     </div>
-                </div>
-
-                <!-- YouTube Container -->
-                <div class="youtube-container">
-                    ${videoId ? `
-                        <div id="yt-player-placeholder" 
-                             data-video-id="${videoId}" 
-                             data-start="${start}" 
-                             data-end="${end}">
-                        </div>
-                         <a href="${launchUrl}" target="_blank" class="yt-launch-btn">
-                            <i class="fas fa-external-link-alt"></i>
-                        </a>
-                    ` : '<div class="no-content">No video available</div>'}
+    
+                    <!-- YouTube Container -->
+                    <div class="youtube-container">
+                        ${videoId ? `
+                            <div id="yt-player-placeholder" 
+                                 data-video-id="${videoId}" 
+                                 data-start="${start}" 
+                                 data-end="${end}">
+                            </div>
+                             <a href="${launchUrl}" target="_blank" class="yt-launch-btn">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        ` : '<div class="no-content">No video available</div>'}
+                    </div>
                 </div>
             </div>
         `;
@@ -145,6 +148,9 @@ export default {
                             'end': end
                         },
                         events: {
+                            'onReady': (event) => {
+                                event.target.playVideo();
+                            },
                             'onStateChange': (event) => {
                                 // YT.PlayerState.ENDED is 0
                                 if (event.data === 0) {
