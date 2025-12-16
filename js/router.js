@@ -11,6 +11,8 @@ export class Router {
             'series': () => import('./views/series-view.js'),
             'series-details': () => import('./views/series-details-view.js'),
             'song-player': () => import('./views/song-player-view.js'),
+            'settings': () => import('./views/settings-view.js'),
+            'sermon-player': () => import('./views/sermon-player-view.js'),
         };
         this.contentContainer = document.getElementById('app-content');
 

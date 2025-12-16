@@ -167,15 +167,32 @@ function addClickListeners() {
             });
         }
 
-        // Card Click (Podbean)
+        // Card Click - Audio Player
         item.addEventListener('click', () => {
-            const url = item.dataset.url;
-            if (url) {
-                // Open Sermon on Podbean logic matches legacy behavior
-                const podbeanUrl = `https://pecharchive.podbean.com/e/${url}`;
-                window.open(podbeanUrl, '_blank');
-            } else {
+            const slug = item.dataset.url;
+            const title = item.dataset.title || 'Sermon';
+            const speaker = item.dataset.artist || '';
+
+            if (!slug) {
                 alert('No audio URL for this sermon');
+                return;
+            }
+
+            // Check user preference
+            const useCustomPlayer = localStorage.getItem('use_custom_player') === 'true';
+
+            if (useCustomPlayer) {
+                // Navigate to in-app sermon player
+                const params = new URLSearchParams({
+                    slug: slug,
+                    title: title,
+                    speaker: speaker
+                });
+                location.hash = `#sermon-player?${params.toString()}`;
+            } else {
+                // Open Podbean in new tab (legacy behavior)
+                const podbeanUrl = `https://pecharchive.podbean.com/e/${slug}`;
+                window.open(podbeanUrl, '_blank');
             }
         });
     });
