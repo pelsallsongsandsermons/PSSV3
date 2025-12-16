@@ -113,7 +113,13 @@ function generateListHtml() {
     }
 
     return currentSermons.map(sermon => {
-        const ytIcon = sermon.youtube_url ? `<i class="fas fa-tv monitor-icon" data-youtube-url="${sermon.youtube_url}" title="Watch on YouTube"></i>` : '';
+        // Robust check for YouTube URL
+        const hasYoutube = sermon.youtube_url &&
+            sermon.youtube_url !== 'null' &&
+            sermon.youtube_url.trim() !== '' &&
+            sermon.youtube_url.length > 10; // "https://..." is usually longer
+
+        const ytIcon = hasYoutube ? `<i class="fas fa-tv monitor-icon" data-youtube-url="${sermon.youtube_url}" title="Watch on YouTube"></i>` : '';
 
         return `
             <div class="sermon-card-dark"
