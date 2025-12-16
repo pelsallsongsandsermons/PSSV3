@@ -157,7 +157,12 @@ function addClickListeners() {
                 e.stopPropagation(); // Prevent card click
                 const ytUrl = ytIcon.dataset.youtubeUrl;
                 if (ytUrl) {
-                    window.open(ytUrl, '_blank');
+                    let finalUrl = ytUrl;
+                    // If it doesn't start with http, assume it's an ID and prepend standard YouTube URL
+                    if (!ytUrl.startsWith('http')) {
+                        finalUrl = `https://www.youtube.com/watch?v=${ytUrl}`;
+                    }
+                    window.open(finalUrl, '_blank');
                 }
             });
         }
