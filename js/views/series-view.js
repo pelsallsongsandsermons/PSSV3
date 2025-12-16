@@ -34,11 +34,11 @@ export default {
                     const dateRange = `${series.dateFrom || ''} - ${series.dateTo || ''}`;
 
                     return `
-                        <div class="series-list-card" onclick="location.hash='#series-details?title=${encodeURIComponent(title)}&type=book&tag=${encodeURIComponent(series.series_tag)}'">
+                        <div class="series-list-card" onclick="location.hash='#series-details?title=${encodeURIComponent(title).replace(/'/g, '%27')}&type=book&tag=${encodeURIComponent(series.series_tag).replace(/'/g, '%27')}'">
                             <div class="card-img" style="background-image: url('${imgUrl}')"></div>
                             <div class="card-info">
-                                <h3>${title}</h3>
-                                <p class="subtitle">${subtitle}</p>
+                                <h3>${subtitle}</h3>
+                                <p class="subtitle">${title}</p>
                                 <p class="dates">${dateRange}</p>
                             </div>
                         </div>

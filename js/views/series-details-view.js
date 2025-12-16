@@ -112,32 +112,15 @@ function generateListHtml() {
         return `<p class="error-msg" style="text-align:center; margin-top:50px; color:#aaa;">No sermons found for this series.</p>`;
     }
 
-    // Determine Base Index logic
-    // Create a map of rank by date
-    const sortedByDateAsc = [...currentSermons].sort((a, b) => a._timestamp - b._timestamp);
-    const rankMap = new Map();
-    sortedByDateAsc.forEach((s, i) => {
-        rankMap.set(s.id, i + 1);
-    });
-
     return currentSermons.map(sermon => {
-        // Get generic rank
-        const index = rankMap.get(sermon.id);
-        const formattedIndex = index.toString().padStart(2, '0');
-
-        // Strip existing leading numbering if present (e.g. "01 - Title")
-        const cleanTitle = sermon.title.replace(/^\d+\s*-\s*/, '').trim();
-
         return `
             <div class="sermon-card-dark"
                  data-url="${sermon.permalink_url || ''}" 
-                 data-title="${cleanTitle}" 
+                 data-title="${sermon.title}" 
                  data-artist="${sermon.speaker || ''}">
                  
                 <div class="card-left">
-                    <span class="sermon-index">${formattedIndex}</span>
-                    <span class="separator">-</span>
-                    <span class="sermon-title-text">${cleanTitle}</span>
+                    <span class="sermon-title-text">${sermon.title}</span>
                 </div>
                 
                 <div class="card-right">

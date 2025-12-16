@@ -804,17 +804,19 @@ body {
     padding: 16px;
 }
 
+
 .series-list-card {
     display: flex;
+    align-items: center;
+    /* Vertically center content */
     background-color: #cbd5e1;
-    /* Light grey/blue from screenshot */
     border-radius: 12px;
-    overflow: hidden;
     height: 100px;
-    /* Fixed height for consistency */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.1s;
+    padding: 0 10px;
+    /* Padding for the card content */
 }
 
 .series-list-card:active {
@@ -822,12 +824,17 @@ body {
 }
 
 .series-list-card .card-img {
-    width: 140px;
-    /* Adjust width visually */
+    width: 120px;
+    height: 80px;
+    /* Float style */
     flex-shrink: 0;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    border-radius: 6px;
+    /* Rounded corners for image */
+    margin-right: 4px;
+    /* Space between image and text */
 }
 
 .series-list-card .card-info {
