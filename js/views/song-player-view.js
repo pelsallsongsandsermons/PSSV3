@@ -160,9 +160,14 @@ export default {
                             'onStateChange': (event) => {
                                 // YT.PlayerState.ENDED is 0
                                 if (event.data === 0) {
-                                    console.log('Video ended. Navigating back.');
-                                    // Use router history or window.history
-                                    window.history.back();
+                                    console.log('Video ended.');
+                                    // Check if we're in a random queue
+                                    if (typeof window.playNextInQueue === 'function' && window.playNextInQueue()) {
+                                        console.log('Playing next song in random queue.');
+                                    } else {
+                                        console.log('Navigating back.');
+                                        window.history.back();
+                                    }
                                 }
                             }
                         }

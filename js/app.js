@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 3. Register Service Worker
     if ('serviceWorker' in navigator) {
         try {
-            const registration = await navigator.serviceWorker.register('/sw.js');
+            // Use relative path for GitHub Pages compatibility
+            const registration = await navigator.serviceWorker.register('./sw.js');
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
 
             // Check for updates
