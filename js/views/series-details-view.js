@@ -113,6 +113,8 @@ function generateListHtml() {
     }
 
     return currentSermons.map(sermon => {
+        const ytIcon = sermon.youtube_url ? `<i class="fas fa-tv monitor-icon" data-youtube-url="${sermon.youtube_url}" title="Watch on YouTube"></i>` : '';
+
         return `
             <div class="sermon-card-dark"
                  data-url="${sermon.permalink_url || ''}" 
@@ -124,7 +126,7 @@ function generateListHtml() {
                 </div>
                 
                 <div class="card-right">
-                    <i class="fas fa-tv monitor-icon"></i>
+                    ${ytIcon}
                 </div>
             </div>
         `;
@@ -144,6 +146,19 @@ function addClickListeners() {
     if (!list) return;
 
     list.querySelectorAll('.sermon-card-dark').forEach(item => {
+        // YouTube Icon Click
+        const ytIcon = item.querySelector('.monitor-icon');
+        if (ytIcon) {
+            ytIcon.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card click
+                const ytUrl = ytIcon.dataset.youtubeUrl;
+                if (ytUrl) {
+                    window.open(ytUrl, '_blank');
+                }
+            });
+        }
+
+        // Card Click (Podbean)
         item.addEventListener('click', () => {
             const url = item.dataset.url;
             if (url) {
