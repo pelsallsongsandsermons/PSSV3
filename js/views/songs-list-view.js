@@ -34,10 +34,12 @@ export default {
         // Generate list HTML
         const listHtml = songs.map(song => {
             const isNew = song.new_song === true;
+            const ytId = song.youtube_url || '';
             return `
             <a href="#song-player?title=${encodeURIComponent(song.songTitle)}" 
                class="song-card" 
                data-title="${song.songTitle}"
+               data-youtube-id="${ytId}"
                onclick="saveLastPlayed('${song.songTitle.replace(/'/g, "\\'")}')">
                 <div class="card-content">
                     <div class="song-title">${song.songTitle}</div>
@@ -133,12 +135,13 @@ export default {
         const closePlaylistBtn = document.getElementById('close-playlist');
         const currentSongInfo = document.getElementById('current-song-info');
 
-        // Store all songs for random selection
+        // Store all songs for random selection (including YouTube IDs)
         let allSongs = [];
         list.querySelectorAll('.song-card').forEach(card => {
             allSongs.push({
                 title: card.dataset.title,
-                href: card.getAttribute('href')
+                href: card.getAttribute('href'),
+                youtubeId: card.dataset.youtubeId || ''
             });
         });
 
@@ -256,22 +259,33 @@ export default {
         }
 
         function startRandomPlay(count) {
-            // Shuffle and pick 'count' songs
-            const shuffled = [...allSongs].sort(() => Math.random() - 0.5);
-            randomQueue = shuffled.slice(0, Math.min(count, allSongs.length));
-            currentIndex = 0;
+            // Shuffle and pick 'count' songs that have YouTube IDs
+            const songsWithYT = allSongs.filter(s => s.youtubeId && s.youtubeId !== 'emptyUrl');
 
-            // Render playlist
-            renderPlaylist();
-            randomPlaylist.classList.remove('hidden');
-
-            // On iOS, show tap prompt first
-            if (isIOS()) {
-                iosTapModal.classList.remove('hidden');
-            } else {
-                // Non-iOS: Start playing immediately
-                playCurrentSong();
+            if (songsWithYT.length === 0) {
+                alert('No songs with YouTube videos available');
+                return;
             }
+
+            const shuffled = [...songsWithYT].sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, Math.min(count, songsWithYT.length));
+
+            // Collect video IDs and titles
+            const videoIds = selected.map(s => s.youtubeId).join(',');
+            const titles = selected.map(s => s.title).join('|||'); // Use ||| as delimiter for titles
+
+            // Navigate to the playlist player view
+            // This uses YouTube's native playlist feature for continuous playback
+            const params = new URLSearchParams({
+                videos: videoIds,
+                titles: titles
+            });
+
+            // Hide the modal
+            randomModal.classList.add('hidden');
+
+            // Navigate to playlist player
+            window.location.hash = `#random-playlist?${params.toString()}`;
         }
 
         function renderPlaylist() {

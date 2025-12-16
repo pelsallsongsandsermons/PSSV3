@@ -13,6 +13,7 @@ export class Router {
             'song-player': () => import('./views/song-player-view.js'),
             'settings': () => import('./views/settings-view.js'),
             'sermon-player': () => import('./views/sermon-player-view.js'),
+            'random-playlist': () => import('./views/random-playlist-player.js'),
         };
         this.contentContainer = document.getElementById('app-content');
 
