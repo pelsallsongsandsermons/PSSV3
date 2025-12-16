@@ -113,11 +113,9 @@ function generateListHtml() {
     }
 
     return currentSermons.map(sermon => {
-        // Robust check for YouTube URL
-        const hasYoutube = sermon.youtube_url &&
-            sermon.youtube_url !== 'null' &&
-            sermon.youtube_url.trim() !== '' &&
-            sermon.youtube_url.length > 10; // "https://..." is usually longer
+        // Check for valid YouTube URL (ignore empty, null, or "null" string)
+        const rawUrl = (sermon.youtube_url || '').toString().trim();
+        const hasYoutube = rawUrl.length > 0 && rawUrl.toLowerCase() !== 'null';
 
         const ytIcon = hasYoutube ? `<i class="fas fa-tv monitor-icon" data-youtube-url="${sermon.youtube_url}" title="Watch on YouTube"></i>` : '';
 
