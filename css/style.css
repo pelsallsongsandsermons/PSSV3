@@ -1421,3 +1421,51 @@ body {
     background: var(--secondary-background);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* iOS Tap to Start Modal */
+.ios-tap-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.ios-play-icon {
+    font-size: 4rem;
+    color: var(--accent-color);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.ios-start-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--accent-color), #00a896);
+    color: #000;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 20px rgba(3, 218, 198, 0.4);
+}
+
+.ios-start-btn:active {
+    transform: scale(0.95);
+}

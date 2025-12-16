@@ -104,6 +104,18 @@ export default {
                         <span id="current-song-info">Song 1 of X</span>
                     </div>
                 </div>
+
+                <!-- iOS Tap to Start Modal -->
+                <div id="ios-tap-modal" class="modal hidden">
+                    <div class="modal-content ios-tap-content">
+                        <i class="fas fa-play-circle ios-play-icon"></i>
+                        <h3>Tap to Start</h3>
+                        <p>iOS requires a tap to enable continuous playback</p>
+                        <button id="ios-start-btn" class="ios-start-btn">
+                            <i class="fas fa-music"></i> Start Playing
+                        </button>
+                    </div>
+                </div>
             </div>
         `;
     },
@@ -224,6 +236,25 @@ export default {
             });
         }
 
+        // iOS Detection
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+
+        // iOS Tap Modal Elements
+        const iosTapModal = document.getElementById('ios-tap-modal');
+        const iosStartBtn = document.getElementById('ios-start-btn');
+
+        // iOS Start Button Handler
+        if (iosStartBtn) {
+            iosStartBtn.addEventListener('click', () => {
+                iosTapModal.classList.add('hidden');
+                // This tap satisfies iOS gesture requirement
+                playCurrentSong();
+            });
+        }
+
         function startRandomPlay(count) {
             // Shuffle and pick 'count' songs
             const shuffled = [...allSongs].sort(() => Math.random() - 0.5);
@@ -234,8 +265,13 @@ export default {
             renderPlaylist();
             randomPlaylist.classList.remove('hidden');
 
-            // Start playing first song
-            playCurrentSong();
+            // On iOS, show tap prompt first
+            if (isIOS()) {
+                iosTapModal.classList.remove('hidden');
+            } else {
+                // Non-iOS: Start playing immediately
+                playCurrentSong();
+            }
         }
 
         function renderPlaylist() {
