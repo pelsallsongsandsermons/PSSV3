@@ -37,7 +37,7 @@ export default {
             const subtitle = series.series_tag || series.SeriesTag || '';
 
             return `
-                <div class="series-card-home" onclick="location.hash='#series-detail?id=${series.id}&type=${series.type || 'book'}'">
+                <div class="series-card-home" onclick="location.hash='#series-details?id=${series.id}&type=${series.type || 'book'}'">
                     <img src="${imgUrl}" alt="${title}">
                     <div class="info">
                         <h4>${title}</h4>
