@@ -37,7 +37,7 @@ export default {
             const subtitle = series.series_tag || series.SeriesTag || '';
 
             return `
-                <div class="series-card-home" onclick="location.hash='#series-details?id=${series.id}&type=${series.type || 'book'}'">
+                <div class="series-card-home" onclick="location.hash='#series-details?title=${encodeURIComponent(title).replace(/'/g, '%27')}&type=${series.type || 'book'}&tag=${encodeURIComponent(subtitle).replace(/'/g, '%27')}'">
                     <img src="${imgUrl}" alt="${title}">
                     <div class="info">
                         <h4>${title}</h4>
