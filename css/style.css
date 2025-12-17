@@ -927,7 +927,7 @@ body {
 
 .series-details-header h2 {
     margin: 0;
-    color: white;
+    color: var(--text-main);
     font-size: 1.1rem;
     font-weight: 700;
 }
@@ -935,7 +935,7 @@ body {
 .series-subtitle {
     margin: 4px 0 12px 0;
     font-size: 0.95rem;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-weight: 400;
 }
 
@@ -956,13 +956,13 @@ body {
 
 .meta-text {
     font-size: 0.9rem;
-    color: #e5e7eb;
+    color: var(--text-secondary);
 }
 
 .sort-btn {
     background: transparent;
-    border: 2px solid white;
-    color: white;
+    border: 2px solid var(--text-main);
+    color: var(--text-main);
     width: 36px;
     height: 36px;
     border-radius: 50%;
