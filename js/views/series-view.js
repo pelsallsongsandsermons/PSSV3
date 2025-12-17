@@ -55,7 +55,48 @@ export default {
             }
         }
 
-        // --- 2. Default Overview (Combined Grid) ---
+        // --- 2. Topic List View ---
+        if (type === 'topic') {
+            const topicSeries = await dataService.getTopicSeries();
+            const pageTitle = 'Topic Series';
+
+            if (topicSeries.length > 0) {
+                const listHtml = topicSeries.map(series => {
+                    let imgUrl = series.seriesGraphic || 'assets/images/PechLogoRound.png';
+                    // Optimize/Proxy Image
+                    if (imgUrl && !imgUrl.includes('/') && !imgUrl.startsWith('http')) {
+                        imgUrl = `https://wsrv.nl/?url=https://drive.google.com/uc?id=${imgUrl}&w=400&output=jpg`;
+                    }
+
+                    const title = series.seriesTitle || 'Unknown';
+                    // Use SeriesTag (PascalCase) as requested
+                    const subtitle = series.SeriesTag || '';
+                    // Use fromDate/toDate (PascalCase/CamelCase mix in requested logic, checking schema: 'fromDate', 'toDate')
+                    const dateRange = `${series.fromDate || ''} - ${series.toDate || ''}`;
+
+                    return `
+                        <div class="series-list-card" onclick="location.hash='#series-details?title=${encodeURIComponent(title).replace(/'/g, '%27')}&type=topic&tag=${encodeURIComponent(series.SeriesTag).replace(/'/g, '%27')}'">
+                            <div class="card-img" style="background-image: url('${imgUrl}')"></div>
+                            <div class="card-info">
+                                <h3>${subtitle}</h3>
+                                <p class="subtitle">${title}</p>
+                                <p class="dates">${dateRange}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="view series-list-view" data-page-title="${pageTitle}">
+                        <div class="series-list-container">
+                            ${listHtml}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // --- 3. Default Overview (Combined Grid) ---
         // If no specific testament selected, show the default grid (or what was there before)
         // This handles cases like #series or #series?type=topic (though topic list might also need simple list view?)
         // For now, preserving existing 'grid' logic for default/topics as fallback.
