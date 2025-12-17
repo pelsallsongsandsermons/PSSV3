@@ -77,7 +77,37 @@ window.addEventListener('beforeinstallprompt', (e) => {
     // Stash the event so it can be triggered later.
     window.deferredPrompt = e;
     console.log('beforeinstallprompt fired');
+    if (window.app.updateInstallButtonVisibility) {
+        window.app.updateInstallButtonVisibility();
+    }
 });
+
+// Helper to manage button visibility
+window.app.updateInstallButtonVisibility = () => {
+    const installBtn = document.getElementById('install-btn');
+    if (!installBtn) return;
+
+    // 1. Check Route (Only show on Home)
+    const currentHash = window.location.hash || '#home';
+    const isHome = currentHash === '#home' || currentHash === '';
+
+    if (!isHome) {
+        installBtn.classList.add('hidden');
+        return;
+    }
+
+    // 2. Check Installability
+    // Android/Desktop: deferredPrompt exists
+    // iOS: Not standalone
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    if (window.deferredPrompt || (isIOS && !isStandalone)) {
+        installBtn.classList.remove('hidden');
+    } else {
+        installBtn.classList.add('hidden');
+    }
+};
 
 // Helper to trigger install
 window.app.installPWA = async () => {
@@ -87,6 +117,7 @@ window.app.installPWA = async () => {
         const { outcome } = await window.deferredPrompt.userChoice;
         console.log(`User response to install prompt: ${outcome}`);
         window.deferredPrompt = null;
+        window.app.updateInstallButtonVisibility(); // Update UI
         return;
     }
 

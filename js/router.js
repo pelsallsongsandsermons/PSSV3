@@ -65,6 +65,11 @@ export class Router {
             console.error('Router: Back button element not found!');
         }
 
+        // Update Install Button Visibility (Global Helper)
+        if (window.app && window.app.updateInstallButtonVisibility) {
+            window.app.updateInstallButtonVisibility();
+        }
+
         // Reset Header Title to default (Views can override this)
         const headerTitle = document.querySelector('#main-header h1');
         if (headerTitle) {

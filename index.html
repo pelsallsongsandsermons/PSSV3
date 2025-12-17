@@ -49,6 +49,10 @@
                     <h1>Pelsall Songs and Sermons</h1>
                 </div>
                 <div class="header-actions">
+                    <button id="install-btn" class="header-icon-btn hidden" aria-label="Install App"
+                        onclick="window.app.installPWA()">
+                        <i class="fas fa-download"></i>
+                    </button>
                     <button id="settings-btn" class="header-icon-btn" aria-label="Settings"
                         onclick="location.hash='#settings'">
                         <i class="fas fa-cog"></i>
@@ -85,6 +89,23 @@
 
         <!-- Navigation Bar (Mobile Style) -->
 
+    </div>
+
+    <!-- iOS Install Instructions Modal (Global) -->
+    <div id="ios-install-modal" class="modal hidden" onclick="this.classList.add('hidden')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3>Install on iOS</h3>
+            <p>To install this app on your iPhone or iPad:</p>
+            <ol style="text-align: left; margin-bottom: 20px; padding-left: 20px; color: var(--secondary-text);">
+                <li style="margin-bottom: 10px;">Tap the <strong>Share</strong> button <i
+                        class="fas fa-share-square"></i> in
+                    your browser toolbar.</li>
+                <li>Scroll down and select <strong>"Add to Home Screen"</strong> <i class="fas fa-plus-square"></i>.
+                </li>
+            </ol>
+            <button class="btn-primary full-width-btn"
+                onclick="document.getElementById('ios-install-modal').classList.add('hidden')">Got it</button>
+        </div>
     </div>
 </body>
 
