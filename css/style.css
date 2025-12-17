@@ -832,7 +832,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 16px;
+    padding: 8px;
 }
 
 
@@ -855,17 +855,14 @@ body {
 }
 
 .series-list-card .card-img {
-    width: 142px;
-    height: 80px;
-    /* Float style */
+    width: 80px;
+    height: 60px;
     flex-shrink: 0;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 6px;
-    /* Rounded corners for image */
-    margin-right: 4px;
-    /* Space between image and text */
+    margin-right: 8px;
 }
 
 .series-list-card .card-info {
@@ -880,10 +877,9 @@ body {
 
 .series-list-card .card-info h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
-    color: #1f2937;
-    /* Dark text */
+    color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -891,9 +887,8 @@ body {
 
 .series-list-card .card-info .subtitle {
     margin: 0;
-    font-size: 0.9rem;
-    color: #4b5563;
-    /* Medium grey */
+    font-size: 0.85rem;
+    color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -901,10 +896,9 @@ body {
 
 .series-list-card .card-info .dates {
     margin: 0;
-    font-size: 0.8rem;
-    color: #6b7280;
-    /* Lighter grey */
-    margin-top: 4px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
 }
 
 /* --- Series Details View --- */
