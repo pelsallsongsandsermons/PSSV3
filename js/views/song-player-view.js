@@ -135,6 +135,39 @@ export default {
             const end = parseInt(ytPlaceholder.dataset.end) || undefined;
 
             if (videoId) {
+                // Wake Lock Handle
+                let wakeLock = null;
+
+                // Function to request wake lock
+                const requestWakeLock = async () => {
+                    const keepScreenOn = localStorage.getItem('keep_screen_on') !== 'false';
+                    if (!keepScreenOn) return;
+
+                    try {
+                        if ('wakeLock' in navigator) {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                            console.log('Screen Wake Lock active');
+
+                            // Re-acquire if visibility changes (e.g. user minimized and came back)
+                            // Note: Wake lock is technically released when page loses visibility, 
+                            // but we want it back when they return if music is playing.
+                            wakeLock.addEventListener('release', () => {
+                                console.log('Screen Wake Lock released');
+                            });
+                        }
+                    } catch (err) {
+                        console.error(`${err.name}, ${err.message}`);
+                    }
+                };
+
+                // Function to release wake lock
+                const releaseWakeLock = async () => {
+                    if (wakeLock !== null) {
+                        await wakeLock.release();
+                        wakeLock = null;
+                    }
+                };
+
                 // Define the init function
                 const initPlayer = () => {
                     new YT.Player('yt-player-placeholder', {
@@ -158,8 +191,18 @@ export default {
                                 }, 1000);
                             },
                             'onStateChange': (event) => {
+                                // 1 = PLAYING
+                                if (event.data === 1) {
+                                    requestWakeLock();
+                                }
+                                // 2 = PAUSED, 0 = ENDED
+                                else if (event.data === 2 || event.data === 0) {
+                                    releaseWakeLock();
+                                }
+
                                 // YT.PlayerState.ENDED is 0
                                 if (event.data === 0) {
+                                    releaseWakeLock(); // Ensure release
                                     console.log('Video ended.');
                                     // Check if we're in a random queue
                                     if (typeof window.playNextInQueue === 'function' && window.playNextInQueue()) {
@@ -174,7 +217,13 @@ export default {
                     });
                 };
 
-                // Load API if not present
+                // Re-acquire lock on visibility change if we think we should have it
+                document.addEventListener('visibilitychange', async () => {
+                    if (wakeLock !== null && document.visibilityState === 'visible') {
+                        await requestWakeLock();
+                    }
+                });
+
                 if (!window.YT) {
                     const tag = document.createElement('script');
                     tag.src = "https://www.youtube.com/iframe_api";

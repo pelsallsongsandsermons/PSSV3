@@ -5,7 +5,8 @@
 export default {
     render: async () => {
         // Load current settings from localStorage
-        const useCustomPlayer = localStorage.getItem('use_custom_player') === 'true';
+        const useCustomPlayer = localStorage.getItem('use_custom_player') !== 'false'; // Default true
+        const keepScreenOn = localStorage.getItem('keep_screen_on') !== 'false'; // Default true
 
         return `
             <div class="view settings-view">
@@ -28,6 +29,16 @@ export default {
 
                 <div class="settings-section">
                     <h3>App</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Keep Screen On</span>
+                            <span class="setting-description">Prevent screen from sleeping while playing music</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-keep-screen-on" ${keepScreenOn ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
                     <div class="setting-item" id="install-container">
                         <div class="setting-info">
                             <span class="setting-label">Install App</span>
@@ -77,6 +88,14 @@ export default {
             toggle.addEventListener('change', (e) => {
                 localStorage.setItem('use_custom_player', e.target.checked);
                 console.log('Custom player setting:', e.target.checked);
+            });
+        }
+
+        const screenToggle = document.getElementById('toggle-keep-screen-on');
+        if (screenToggle) {
+            screenToggle.addEventListener('change', (e) => {
+                localStorage.setItem('keep_screen_on', e.target.checked);
+                console.log('Keep screen on setting:', e.target.checked);
             });
         }
     }
