@@ -49,10 +49,9 @@ export default {
 
         return `
             <div class="view songs-view-dark">
-                 <!-- Header is handled globally, but we might need to adjust it or hide it if we want full screen look. 
-                      For now, we fit inside the standard layout but style the container. -->
+                <!-- Header is handled globally -->
                 
-                <div class="content-wrapper">
+                <div class="content-wrapper" style="padding-bottom: 80px;"> <!-- Extra padding for bottom bar -->
                     <!-- Search with Button -->
                     <div class="search-bar-dark">
                         <div class="search-input-wrapper">
@@ -62,18 +61,23 @@ export default {
                         <button id="search-btn" class="search-btn">Search</button>
                     </div>
 
-                    <!-- Random Play Button -->
-                    <div class="random-play-section">
-                        <button id="random-play-btn" class="random-play-btn">
-                            <i class="fas fa-random"></i> Random Play
-                        </button>
-                    </div>
-
                     ${lastPlayedHtml}
 
                     <div id="songs-list" class="songs-grid">
                         ${listHtml}
                     </div>
+                </div>
+
+                <!-- Fixed Bottom Bar -->
+                <div class="songs-bottom-bar">
+                    <button id="random-play-btn" class="bottom-bar-btn">
+                        <i class="fas fa-random"></i>
+                        <span>Random</span>
+                    </button>
+                    <button class="bottom-bar-btn" onclick="location.hash='#playlists'">
+                        <i class="fas fa-list-ul"></i>
+                        <span>Playlists</span>
+                    </button>
                 </div>
 
                 <!-- Random Play Modal -->

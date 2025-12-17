@@ -2,7 +2,7 @@
  * Service Worker
  * Handles caching and offline functionality
  */
-const CACHE_NAME = 'v3.1.065';
+const CACHE_NAME = 'v3.1.066';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

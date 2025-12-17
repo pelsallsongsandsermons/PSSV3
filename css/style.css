@@ -325,14 +325,16 @@ body {
     /* Teal Border */
     border-radius: 8px;
     color: white;
-    padding: 10px 4px;
+    padding: 4px;
     text-align: center;
     text-decoration: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 70px;
+    height: 70px;
+    min-height: 0;
+    line-height: 1.1;
     font-weight: 600;
     font-size: 0.85rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -1474,4 +1476,205 @@ body {
 
 .ios-start-btn:active {
     transform: scale(0.95);
+}
+
+/* --- Playlist Feature --- */
+
+/* Fixed Bottom Bar */
+.songs-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background-color: var(--secondary-background);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.bottom-bar-btn {
+    background: transparent;
+    border: none;
+    color: var(--secondary-text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.bottom-bar-btn i {
+    font-size: 1.2rem;
+}
+
+.bottom-bar-btn.active,
+.bottom-bar-btn:active {
+    color: var(--accent-color);
+    background: rgba(3, 218, 198, 0.1);
+}
+
+/* Playlists View */
+.playlists-view {
+    padding-bottom: 90px;
+    /* Space for FAB */
+}
+
+/* Floating Action Button for Create */
+.fab-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    border: none;
+    z-index: 90;
+    transition: transform 0.2s;
+    text-decoration: none;
+}
+
+.fab-btn:active {
+    transform: scale(0.95);
+}
+
+/* Playlist Card */
+.playlist-card {
+    background-color: var(--secondary-background);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.playlist-card:active {
+    background-color: #37474F;
+}
+
+.playlist-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.playlist-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--secondary-text);
+}
+
+.playlist-delete-btn {
+    background: transparent;
+    border: none;
+    color: #ef5350;
+    /* Red */
+    padding: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 2;
+}
+
+/* Create Playlist View */
+.create-playlist-view {
+    padding: 20px;
+}
+
+.create-form-group {
+    margin-bottom: 20px;
+}
+
+.create-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--secondary-text);
+}
+
+.create-form-group input {
+    height: 70px;
+    /* Big touch target */
+    width: 100%;
+    background: var(--secondary-background);
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.select-songs-list {
+    margin-bottom: 80px;
+    /* Space for sticky footer */
+}
+
+.select-song-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+}
+
+.select-song-item input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin-right: 16px;
+    accent-color: var(--accent-color);
+}
+
+.select-song-item span {
+    font-size: 1rem;
+    color: white;
+}
+
+/* Sticky Footer for Form Actions */
+.form-actions-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: var(--secondary-background);
+    border-top: 1px solid #444;
+    display: flex;
+    gap: 12px;
+}
+
+.full-width-btn {
+    flex: 1;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: #000;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--secondary-text);
+    color: var(--secondary-text);
 }
