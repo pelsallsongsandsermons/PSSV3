@@ -45,6 +45,13 @@ body.dark-mode {
 
     --border-color: rgba(255, 255, 255, 0.12);
     --shadow-color: rgba(0, 0, 0, 0.3);
+
+    /* Explicitly map legacy variables for Dark Mode */
+    --primary-background: var(--bg-body);
+    --secondary-background: var(--bg-card);
+    --header-background: var(--bg-header);
+    --primary-text: var(--text-main);
+    --secondary-text: var(--text-secondary);
 }
 
 * {
