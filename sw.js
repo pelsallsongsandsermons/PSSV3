@@ -2,17 +2,17 @@
  * Service Worker
  * Handles caching and offline functionality
  */
-const CACHE_NAME = 'v3.1.072';
+const CACHE_NAME = 'v3.1.073';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/js/app.js',
-    '/js/config.js',
-    '/js/version.js',
-    '/js/router.js',
-    '/js/services/supabase-client.js',
-    '/manifest.json',
+    './',
+    './index.html',
+    './css/style.css',
+    './js/app.js',
+    './js/config.js',
+    './js/version.js',
+    './js/router.js',
+    './js/services/supabase-client.js',
+    './manifest.json',
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 ];
@@ -51,7 +51,7 @@ self.addEventListener('fetch', (event) => {
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request).catch(() => {
-                return caches.match('/index.html');
+                return caches.match('./index.html');
             })
         );
         return;
