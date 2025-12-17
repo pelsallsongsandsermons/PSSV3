@@ -7,13 +7,10 @@ export default {
 
         // Get Last Played Song
         let lastPlayedHtml = '';
+        let showLast = false;
         try {
             const lastPlayed = JSON.parse(localStorage.getItem('lastPlayedSong'));
-            const showLast = lastPlayed && lastPlayed.title;
-
-            // Layout: Title Box | Clear | See New
-            // If no last song, we just show See New aligned right or placeholder?
-            // Screenshot implies the structure exists.
+            showLast = lastPlayed && lastPlayed.title;
 
             lastPlayedHtml = `
                 <div class="last-song-section" id="last-song-section">
@@ -22,8 +19,6 @@ export default {
                         <div class="last-song-box" style="${showLast ? '' : 'visibility:hidden'}">
                             ${showLast ? lastPlayed.title : ''}
                         </div>
-                        <button id="clear-last-song" class="action-btn" style="${showLast ? '' : 'visibility:hidden'}">Clear</button>
-                        <button id="filter-new-songs" class="action-btn">See new</button>
                     </div>
                 </div>
             `;
@@ -55,10 +50,11 @@ export default {
                     <!-- Search with Button -->
                     <div class="search-bar-dark">
                         <div class="search-input-wrapper">
-                            <input type="text" id="song-search" placeholder="Search (enter any part of name)">
+                            <input type="text" id="song-search" placeholder="Search...">
                             <i class="fas fa-search search-icon"></i>
                         </div>
-                        <button id="search-btn" class="search-btn">Search</button>
+                        <button id="clear-last-song" class="action-btn" style="${showLast ? '' : 'visibility:hidden'}">Clear</button>
+                        <button id="filter-new-songs" class="action-btn">New</button>
                     </div>
 
                     ${lastPlayedHtml}
@@ -200,7 +196,7 @@ export default {
                         item.style.display = hasBadge ? 'flex' : 'none';
                     });
                 } else {
-                    seeNewBtn.textContent = 'See new';
+                    seeNewBtn.textContent = 'New';
                     filterList();
                 }
             });
