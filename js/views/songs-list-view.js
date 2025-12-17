@@ -311,6 +311,9 @@ export default {
                 currentIndex: currentIndex
             }));
 
+            // Set return route
+            localStorage.setItem('playlistReturn', '#songs');
+
             // Navigate to song player
             window.location.hash = song.href;
         }

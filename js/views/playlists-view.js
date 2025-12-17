@@ -14,9 +14,14 @@ export default {
                         <h3>${playlist.name}</h3>
                         <p>${playlist.songs.length} songs • Created ${new Date(playlist.createdAt).toLocaleDateString()}</p>
                     </div>
-                    <button class="playlist-delete-btn" data-id="${playlist.id}">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    <div class="playlist-actions">
+                        <a href="#create-playlist?id=${playlist.id}" class="playlist-edit-btn" data-id="${playlist.id}">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="playlist-delete-btn" data-id="${playlist.id}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </div>
             `).join('');
 
@@ -74,6 +79,9 @@ export default {
                 if (playlist) {
                     const firstSong = playlistService.playPlaylist(playlist);
                     if (firstSong) {
+                        // Set return route
+                        localStorage.setItem('playlistReturn', '#playlists');
+
                         // Navigate to player
                         window.location.hash = firstSong.href;
                     } else {

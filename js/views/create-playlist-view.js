@@ -3,27 +3,45 @@ import { DataService } from '../services/data-service.js';
 import { PlaylistService } from '../services/playlist-service.js';
 
 export default {
-    render: async () => {
+    render: async (params) => {
         const dataService = new DataService();
+        const playlistService = new PlaylistService();
         const songs = await dataService.getSongs();
+
+        let editMode = false;
+        let playlistId = null;
+        let playlistName = '';
+        let existingSongTitles = [];
+
+        if (params && params.get('id')) {
+            playlistId = params.get('id');
+            const playlist = playlistService.getPlaylistById(playlistId);
+            if (playlist) {
+                editMode = true;
+                playlistName = playlist.name;
+                existingSongTitles = playlist.songs.map(s => s.title);
+            }
+        }
 
         // Sort songs alphabetically
         songs.sort((a, b) => a.songTitle.localeCompare(b.songTitle));
 
-        const songsListHtml = songs.map(song => `
+        const songsListHtml = songs.map(song => {
+            const isChecked = existingSongTitles.includes(song.songTitle) ? 'checked' : '';
+            return `
             <label class="select-song-item">
-                <input type="checkbox" name="selectedSongs" value="${song.songTitle}" data-href="#song-player?title=${encodeURIComponent(song.songTitle)}">
+                <input type="checkbox" name="selectedSongs" value="${song.songTitle}" data-href="#song-player?title=${encodeURIComponent(song.songTitle)}" ${isChecked}>
                 <span>${song.songTitle}</span>
             </label>
-        `).join('');
+        `}).join('');
 
         return `
             <div class="view create-playlist-view">
-                <h2 style="color:white; margin-bottom: 20px;">Create Playlist</h2>
+                <h2 style="color:white; margin-bottom: 20px;">${editMode ? 'Edit Playlist' : 'Create Playlist'}</h2>
                 
                 <div class="create-form-group">
                     <label for="playlist-name">Playlist Name</label>
-                    <input type="text" id="playlist-name" placeholder="e.g. Sunday Morning Service">
+                    <input type="text" id="playlist-name" placeholder="e.g. Sunday Morning Service" value="${playlistName}">
                 </div>
 
                 <div class="create-form-group">
@@ -46,6 +64,16 @@ export default {
         const cancelBtn = document.getElementById('cancel-create');
         const nameInput = document.getElementById('playlist-name');
 
+        // Extract ID if editing
+        const hash = window.location.hash;
+        const query = hash.split('?')[1];
+        const params = new URLSearchParams(query);
+        const editId = params.get('id');
+
+        if (editId) {
+            saveBtn.textContent = 'Update';
+        }
+
         saveBtn.addEventListener('click', () => {
             const name = nameInput.value.trim();
             if (!name) {
@@ -64,11 +92,19 @@ export default {
                 href: chk.dataset.href
             }));
 
-            if (playlistService.savePlaylist(name, selectedSongs)) {
-                // Return to playlists view
-                window.location.hash = '#playlists';
+            if (editId) {
+                if (playlistService.updatePlaylist(editId, name, selectedSongs)) {
+                    window.location.hash = '#playlists';
+                } else {
+                    alert('Error updating playlist');
+                }
             } else {
-                alert('Error creating playlist');
+                if (playlistService.savePlaylist(name, selectedSongs)) {
+                    // Return to playlists view
+                    window.location.hash = '#playlists';
+                } else {
+                    alert('Error creating playlist');
+                }
             }
         });
 

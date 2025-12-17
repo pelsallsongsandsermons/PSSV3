@@ -208,8 +208,9 @@ export default {
                                     if (typeof window.playNextInQueue === 'function' && window.playNextInQueue()) {
                                         console.log('Playing next song in random queue.');
                                     } else {
-                                        console.log('Navigating back.');
-                                        window.history.back();
+                                        console.log('Queue finished. Returning to list.');
+                                        const returnRoute = localStorage.getItem('playlistReturn') || '#home';
+                                        window.location.hash = returnRoute;
                                     }
                                 }
                             }
