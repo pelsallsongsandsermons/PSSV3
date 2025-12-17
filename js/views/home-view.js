@@ -78,7 +78,7 @@ export default {
                     <a href="#series?type=topic" class="home-action-btn">
                         <span>Topics</span>
                     </a>
-                    <a href="https://www.youtube.com/@pelsallevangelicalchurch" target="_blank" class="home-action-btn">
+                    <a href="https://www.youtube.com/playlist?list=PL3BMLQCIh118y1UbPY_qnO3VYXltnMXZ0" target="_blank" class="home-action-btn">
                         <span>Live<br>Stream</span>
                     </a>
                     <a href="#sermons" class="home-action-btn">
