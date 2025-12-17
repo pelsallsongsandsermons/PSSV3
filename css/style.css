@@ -296,11 +296,17 @@ body {
 
 .hero-section {
     width: 100%;
-    height: 130px;
+    height: 100px;
     background-size: cover;
     background-position: center;
     margin-bottom: 20px;
     position: relative;
+}
+
+@media (min-width: 768px) {
+    .hero-section {
+        height: 130px;
+    }
 }
 
 /* Home Action Buttons Grid */
@@ -326,9 +332,9 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 80px;
+    min-height: 70px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     transition: background-color 0.2s;
 }
