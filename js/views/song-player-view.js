@@ -74,7 +74,7 @@ export default {
 
                 <!-- Song Title Banner -->
                 <div class="song-banner">
-                    <h2>${song.songTitle.toUpperCase()}</h2>
+                    <h2>${song.songTitle}</h2>
                 </div>
 
                 <!-- Content Grid Wrapper -->

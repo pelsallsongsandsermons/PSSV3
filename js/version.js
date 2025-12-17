@@ -1,3 +1,3 @@
 // App Version
 // Increment this to trigger service worker update and client reload
-export const VERSION = 'V3.1.074';
+export const VERSION = 'V3.1.075';

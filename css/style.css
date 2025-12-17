@@ -512,7 +512,7 @@ body {
 
 .song-banner h2 {
     color: var(--text-main);
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
 }
 
