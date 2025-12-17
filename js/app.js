@@ -60,6 +60,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkVersion();
 });
 
+// PWA Install Logic
+window.deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    window.deferredPrompt = e;
+    console.log('beforeinstallprompt fired');
+});
+
+// Helper to trigger install
+window.app.installPWA = async () => {
+    // 1. Check for Android/Desktop prompt
+    if (window.deferredPrompt) {
+        window.deferredPrompt.prompt();
+        const { outcome } = await window.deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+        window.deferredPrompt = null;
+        return;
+    }
+
+    // 2. Check for iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    if (isIOS && !isStandalone) {
+        // Show iOS instructions modal
+        const iosModal = document.getElementById('ios-install-modal');
+        if (iosModal) {
+            iosModal.classList.remove('hidden');
+        } else {
+            alert('To install: Tap the Share button and select "Add to Home Screen".');
+        }
+    } else {
+        alert('App is already installed or installation not supported on this device.');
+    }
+};
+
 function checkVersion() {
     const storedVersion = localStorage.getItem('app_version');
     if (storedVersion && storedVersion !== VERSION) {

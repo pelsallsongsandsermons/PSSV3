@@ -27,8 +27,38 @@ export default {
                 </div>
 
                 <div class="settings-section">
-                    <h3>About</h3>
-                    <p class="about-text">Pelsall Songs & Sermons v<span id="settings-version"></span></p>
+                    <h3>App</h3>
+                    <div class="setting-item" id="install-container">
+                        <div class="setting-info">
+                            <span class="setting-label">Install App</span>
+                            <span class="setting-description">Install as a native app on your device</span>
+                        </div>
+                        <button class="action-btn" onclick="window.app.installPWA()">Install</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Version</span>
+                            <span class="setting-description" id="settings-version">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-text">
+                    <p>Pelsall Songs and Sermons v3.0</p>
+                    <p>&copy; 2025 Pelsall Evangelical Church</p>
+                </div>
+
+                <!-- iOS Install Instructions Modal -->
+                <div id="ios-install-modal" class="modal hidden" onclick="this.classList.add('hidden')">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <h3>Install on iOS</h3>
+                        <p>To install this app on your iPhone or iPad:</p>
+                        <ol style="text-align: left; margin-bottom: 20px; padding-left: 20px; color: var(--secondary-text);">
+                            <li style="margin-bottom: 10px;">Tap the <strong>Share</strong> button <i class="fas fa-share-square"></i> in your browser toolbar.</li>
+                            <li>Scroll down and select <strong>"Add to Home Screen"</strong> <i class="fas fa-plus-square"></i>.</li>
+                        </ol>
+                        <button class="btn-primary full-width-btn" onclick="document.getElementById('ios-install-modal').classList.add('hidden')">Got it</button>
+                    </div>
                 </div>
             </div>
         `;
