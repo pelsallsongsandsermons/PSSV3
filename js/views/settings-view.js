@@ -13,6 +13,21 @@ export default {
                 <h2>Settings</h2>
                 
                 <div class="settings-section">
+                    <h3>Display</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Dark Mode</span>
+                            <span class="setting-description">Switch between Light and Dark themes</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-theme">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
                     <h3>Sermon Player</h3>
                     
                     <div class="setting-item">
@@ -96,6 +111,23 @@ export default {
             screenToggle.addEventListener('change', (e) => {
                 localStorage.setItem('keep_screen_on', e.target.checked);
                 console.log('Keep screen on setting:', e.target.checked);
+            });
+        }
+        // Theme Toggle
+        const themeToggle = document.getElementById('toggle-theme');
+        if (themeToggle) {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            themeToggle.checked = currentTheme === 'dark';
+
+            themeToggle.addEventListener('change', (e) => {
+                const newTheme = e.target.checked ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+
+                if (newTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
             });
         }
     }

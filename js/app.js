@@ -18,6 +18,14 @@ window.app = {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log(`PSSV3 Starting... Version: ${VERSION}`);
 
+    // Initialize Theme
+    const theme = localStorage.getItem('theme') || 'light';
+    if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+
     // 1. Initialize Supabase
     window.app.supabase = new SupabaseService();
 
