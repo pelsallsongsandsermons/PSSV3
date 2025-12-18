@@ -2,7 +2,8 @@
  * PSSV3 - Native PWA
  * Main Entry Point
  */
-import { VERSION } from './version.js';
+import { CONFIG } from './config.js';
+const VERSION = CONFIG.VERSION;
 import { Router } from './router.js';
 import { SupabaseService } from './services/supabase-client.js';
 import { Player } from './player.js';
@@ -156,12 +157,13 @@ window.app.forceReload = async () => {
 
 async function checkVersion() {
     try {
-        // Fetch version.js with cache-busting timestamp
-        const response = await fetch(`./js/version.js?v=${Date.now()}`);
+        // Fetch config.js with cache-busting timestamp to see the actual server version
+        const response = await fetch(`./js/config.js?v=${Date.now()}`);
         if (!response.ok) return;
 
         const text = await response.text();
-        const match = text.match(/VERSION = '([^']+)'/);
+        // Regex to match VERSION in CONFIG object
+        const match = text.match(/VERSION:\s*'([^']+)'/);
         const serverVersion = match ? match[1] : null;
 
         if (serverVersion && serverVersion !== VERSION) {

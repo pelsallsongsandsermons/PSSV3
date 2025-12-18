@@ -2,7 +2,7 @@
  * Service Worker
  * Handles caching and offline functionality
  */
-const CACHE_NAME = 'v3.1.099';
+const CACHE_NAME = 'v3.1.100';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -53,6 +53,23 @@ self.addEventListener('fetch', (event) => {
             fetch(event.request).catch(() => {
                 return caches.match('./index.html');
             })
+        );
+        return;
+    }
+
+    // Network-first for key scripts and config to ensure version detection works
+    const url = new URL(event.request.url);
+    const isCoreAsset = ASSETS_TO_CACHE.some(asset => url.pathname.endsWith(asset.replace('./', '')));
+
+    if (isCoreAsset && (url.pathname.endsWith('.js') || url.pathname.endsWith('.json'))) {
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
+                    const clonedResponse = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clonedResponse));
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
         );
         return;
     }
