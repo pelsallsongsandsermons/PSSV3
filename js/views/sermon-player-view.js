@@ -82,10 +82,16 @@ export default {
             }
         } else {
             // Fallback - episode not found in RSS
+            // The slug might be a full URL or just the episode slug
+            // Try constructing a clean Podbean URL
+            let podbeanUrl = `https://pecharchive.podbean.com/e/${slug}`;
+            // Remove any double slashes (except after https:)
+            podbeanUrl = podbeanUrl.replace(/([^:])\/\//g, '$1/');
+
             audioContainer.innerHTML = `
                 <div class="error-msg">
                     <p>Audio not available in custom player.</p>
-                    <a href="https://pecharchive.podbean.com/e/${slug}/" target="_blank" class="fallback-link">
+                    <a href="${podbeanUrl}" target="_blank" class="fallback-link">
                         <i class="fas fa-external-link-alt"></i> Open on Podbean
                     </a>
                 </div>
