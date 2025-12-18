@@ -71,9 +71,6 @@ export default {
                         Your browser does not support the audio element.
                     </audio>
                 </div>
-                <a href="${episode.mp3Url}" class="download-link" download>
-                    <i class="fas fa-download"></i> Download MP3
-                </a>
             `;
 
             // Update description
