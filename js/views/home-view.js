@@ -7,37 +7,26 @@ export default {
         // Fetch "Current" Series based on the 'current' boolean flag in the DB
         const currentSeries = await dataService.getCurrentSeries();
 
-        // Fetch settings for livestream URL
+        // Fetch settings for home page content
         const settings = await dataService.getSettings();
         const livestreamUrl = settings?.livestream_url || 'https://www.youtube.com/@pelsallevangelicalchurch';
+        const songCount = settings?.songCount || 180;
+        const sermonCount = settings?.sermonCount || 1300;
+        const introVerse1 = settings?.intro_verse1 || '';
+        const introVerse2 = settings?.intro_verse2 || '';
 
         // Fallback if no series is marked as current (optional, but good for stability)
         if (currentSeries.length === 0) {
             // Logic to fallback or show empty state? 
-            // For now, let's just grab the 2 most recent book series as a safety net if desired, 
-            // OR just leave it empty if that's the desired behavior.
-            // keeping it empty creates a valid "None" state.
         }
 
         const createSeriesCard = (series) => {
-            // Map DB columns to UI fields
-            // "seriesTitle" and "seriesGraphic" are the columns in bookSeries
+            // ... (keep current implementation)
             let imgUrl = series.seriesGraphic || series.artUri || 'assets/images/PechLogoRound.png';
-
-            // Check if imgUrl is a Google Drive ID (contains no slashes and looks like an ID)
-            // or explicitly fix known relative paths if any.
-            // Google IDs usually alphanumeric, - and _.
             if (imgUrl && !imgUrl.includes('/') && !imgUrl.startsWith('http')) {
-                // Use wsrv.nl (caching proxy) to bypass Google Drive rate limits
-                // We pass the standard Google Drive link to it.
                 imgUrl = `https://wsrv.nl/?url=https://drive.google.com/uc?id=${imgUrl}&w=800&output=jpg`;
             }
-
             const title = series.seriesTitle || series.title || 'Unknown Series';
-
-            // "series_tag" (bookSeries) vs "SeriesTag" (topicSeries)
-            // Schema check confirms bookSeries uses 'series_tag' (snake_case)
-            // Schema check confirms topicSeries uses 'SeriesTag' (PascalCase)
             const subtitle = series.series_tag || series.SeriesTag || '';
 
             return `
@@ -92,29 +81,46 @@ export default {
 
                 <!-- Footer Info -->
                 <div class="footer-info-box">
-                    Explore 180 songs, and over 1300 sermons.
+                    Explore ${songCount} songs, and over ${sermonCount} sermons.
                 </div>
 
                 <div class="home-footer-text">
-                    <p style="margin-bottom: 20px;">
-                        Oh come, let us sing to the Lord; let us make a joyful noise to the rock of our salvation! 
-                        Let us come into his presence with thanksgiving; let us make a joyful noise to him with songs of praise!
-                        <br>(Psalm 95:1-2)
-                    </p>
-                    <p style="margin-bottom: 20px;">
-                        Pelsall Songs and Sermons is a collection of recordings from the Sunday services at Pelsall Evangelical Church...
-                    </p>
-                    <p style="margin-bottom: 20px;">
-                        For further information or support, please contact us at<br>
-                        <strong>pelsallsongsandsermons@pech.co.uk</strong>
-                    </p>
-                    <p>
-                        <a href="https://www.pech.co.uk" target="_blank" style="color: #4DB6AC;">www.pech.co.uk</a>
-                    </p>
-                    <br>
-                    <button onclick="location.reload()" style="background: #2A4D55; border: 1px solid #4DB6AC; color: white; padding: 10px 20px; border-radius: 20px;">Run the Tour again next time</button>
-                    <br><br>
-                    <h3>Soli Deo Gloria</h3>
+                    ${introVerse1 ? `
+                        <div class="bible-verse">${introVerse1}</div>
+                        <div class="divider-line"></div>
+                    ` : ''}
+
+                    <div class="descriptive-text">
+                        <p>Pelsall Songs and Sermons is a collection of recordings from the Sunday services at Pelsall Evangelical Church. The songs are presented with lyrics, for you to use in your personal or family worship at home. New songs will be added regularly.</p>
+                        
+                        <p>The sermons are recordings of Christ-centred Bible ministry from our services, over several years, and from several different preachers.</p>
+                        
+                        <p>You can easily follow the current preaching series, or explore previous series. There are also a number of topical series covering various subjects. You can use the "Search" page to find sermons by title, bible book/chapter, and speaker.</p>
+                        
+                        <p>Any song or sermon can be listened to by tapping on the title. On some entries you will see a red video symbol. If you tap on the symbol you will be taken to the original YouTube recording.</p>
+                        
+                        <p>We pray that these recordings help you to draw near to our God - Father, Son and Holy Spirit - to give Him glory and know His blessing.</p>
+                        
+                        <p>For further information or support, please contact us at<br>
+                        <strong>pelsallsongsandsermons@pech.co.uk</strong></p>
+                        
+                        <p><a href="https://www.pech.co.uk" target="_blank" style="color: #4DB6AC;">www.pech.co.uk</a></p>
+                    </div>
+
+                    <div class="divider-line"></div>
+
+                    ${introVerse2 ? `
+                        <div class="bible-verse">${introVerse2}</div>
+                        <div class="divider-line"></div>
+                    ` : ''}
+
+                    <h3 style="margin: 20px 0;">Soli Deo Gloria</h3>
+
+                    <div class="attribution-text">
+                        <p>All songs are from the Pelsall Evangelical Church streamed services and distributed under the terms and conditions of the CCLI Streaming Licence number 1321213. Used by permission</p>
+                        <p>Scripture quotations are from the ESV Bible (The Holy Bible, English Standard Version) © 2001 by Crossway, a publishing ministry of Good News Publishers. Used by permission.</p>
+                        <p>The App does not request, store or share any personal information from you.</p>
+                    </div>
                 </div>
             </div>
         `;
