@@ -7,6 +7,10 @@ export default {
         // Fetch "Current" Series based on the 'current' boolean flag in the DB
         const currentSeries = await dataService.getCurrentSeries();
 
+        // Fetch settings for livestream URL
+        const settings = await dataService.getSettings();
+        const livestreamUrl = settings?.livestream_url || 'https://www.youtube.com/@pelsallevangelicalchurch';
+
         // Fallback if no series is marked as current (optional, but good for stability)
         if (currentSeries.length === 0) {
             // Logic to fallback or show empty state? 
@@ -78,7 +82,7 @@ export default {
                     <a href="#series?type=topic" class="home-action-btn">
                         <span>Topics</span>
                     </a>
-                    <a href="https://www.youtube.com/playlist?list=PL3BMLQCIh118y1UbPY_qnO3VYXltnMXZ0" target="_blank" class="home-action-btn">
+                    <a href="${livestreamUrl}" target="_blank" class="home-action-btn">
                         <span>Live<br>Stream</span>
                     </a>
                     <a href="#find-sermons" class="home-action-btn">

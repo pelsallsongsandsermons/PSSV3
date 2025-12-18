@@ -140,4 +140,18 @@ export class DataService {
             .order('sequence', { ascending: true });
         return data || [];
     }
+
+    async getSettings() {
+        const { data, error } = await this.supabase
+            .from('settings')
+            .select('*')
+            .limit(1)
+            .single();
+
+        if (error) {
+            console.error('Error fetching settings:', error);
+            return null;
+        }
+        return data;
+    }
 }
