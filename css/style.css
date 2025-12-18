@@ -258,6 +258,14 @@ body {
     overflow: hidden;
 }
 
+.sermon-player-view {
+    background-color: var(--primary-background);
+    padding: 8px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
 .list-item {
     background-color: var(--secondary-background);
     padding: 16px;
@@ -1171,13 +1179,6 @@ body {
 }
 
 /* Sermon Player View */
-.sermon-player-view {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
 .sermon-player-header {
     text-align: center;
     padding-bottom: 16px;

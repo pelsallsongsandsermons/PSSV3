@@ -146,10 +146,6 @@ function checkVersion() {
         // For now, just update the stored version
     }
     localStorage.setItem('app_version', VERSION);
-
-    // Display version in UI if element exists
-    const versionEl = document.getElementById('app-version');
-    if (versionEl) versionEl.textContent = VERSION;
 }
 
 function showUpdatePrompt() {
