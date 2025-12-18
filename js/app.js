@@ -16,11 +16,30 @@ window.app = {
     player: null
 };
 
+// 0. Initialize Default Settings
+function initializeSettings() {
+    const defaults = {
+        'theme': 'dark',
+        'use_custom_player': 'true',
+        'keep_screen_on': 'true'
+    };
+
+    for (const [key, value] of Object.entries(defaults)) {
+        if (localStorage.getItem(key) === null) {
+            localStorage.setItem(key, value);
+            console.log(`Initialized default setting: ${key} = ${value}`);
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log(`PSSV3 Starting... Version: ${VERSION}`);
 
+    // Set defaults if missing
+    initializeSettings();
+
     // Initialize Theme
-    const theme = localStorage.getItem('theme') || 'light';
+    const theme = localStorage.getItem('theme') || 'dark';
     if (theme === 'dark') {
         document.body.classList.add('dark-mode');
     } else {
@@ -90,6 +109,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
     if (window.app.updateInstallButtonVisibility) {
         window.app.updateInstallButtonVisibility();
     }
+});
+
+window.addEventListener('appinstalled', (e) => {
+    console.log('PSSV3 was installed');
+    // Ensure defaults are applied on install
+    initializeSettings();
 });
 
 // Helper to manage button visibility
