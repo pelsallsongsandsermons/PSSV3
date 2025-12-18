@@ -1568,6 +1568,12 @@ body {
     transform: scale(0.95);
 }
 
+/* Playlist View Titles */
+.playlists-view h2,
+.create-playlist-view h2 {
+    color: var(--text-main);
+}
+
 /* Playlist Card */
 .playlist-card {
     background-color: var(--secondary-background);
