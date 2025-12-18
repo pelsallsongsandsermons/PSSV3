@@ -1782,7 +1782,7 @@ body {
     width: 100%;
     padding: 14px 40px 14px 16px;
     border: 1px solid var(--border-color);
-    border-radius: 25px;
+    border-radius: 8px;
     background-color: var(--secondary-background);
     color: var(--text-main);
     font-size: 1rem;
@@ -1812,7 +1812,7 @@ body {
     color: #000;
     border: none;
     padding: 14px 20px;
-    border-radius: 25px;
+    border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -1834,7 +1834,7 @@ body {
 
 .search-action-btn {
     padding: 14px 24px;
-    border-radius: 25px;
+    border-radius: 8px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;

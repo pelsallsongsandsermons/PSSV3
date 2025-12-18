@@ -46,7 +46,6 @@ export default {
 
                         <!-- Action Buttons -->
                         <div class="search-actions">
-                            <button id="search-btn" class="search-action-btn primary">Search</button>
                             <button id="clear-all-btn" class="search-action-btn secondary">Clear All</button>
                         </div>
                     </div>
@@ -68,7 +67,6 @@ export default {
         const clearTitleBtn = document.getElementById('clear-title');
         const clearBookrefBtn = document.getElementById('clear-bookref');
         const clearSpeakerBtn = document.getElementById('clear-speaker');
-        const searchBtn = document.getElementById('search-btn');
         const clearAllBtn = document.getElementById('clear-all-btn');
 
         // Update Header Title
@@ -154,8 +152,6 @@ export default {
         bookrefInput.addEventListener('input', filterSermons);
         speakerSelect.addEventListener('change', filterSermons);
 
-        // Search button (same as live filter but explicit)
-        searchBtn.addEventListener('click', filterSermons);
 
         // Clear buttons
         clearTitleBtn.addEventListener('click', () => {
