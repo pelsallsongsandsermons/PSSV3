@@ -154,13 +154,24 @@ window.app.forceReload = async () => {
     window.location.reload(true);
 };
 
-function checkVersion() {
-    const storedVersion = localStorage.getItem('app_version');
-    if (storedVersion && storedVersion !== VERSION) {
-        console.log(`Version mismatch: stored ${storedVersion} != current ${VERSION}. Force reloading...`);
-        window.app.forceReload();
-    } else {
-        localStorage.setItem('app_version', VERSION);
+async function checkVersion() {
+    try {
+        // Fetch version.js with cache-busting timestamp
+        const response = await fetch(`./js/version.js?v=${Date.now()}`);
+        if (!response.ok) return;
+
+        const text = await response.text();
+        const match = text.match(/VERSION = '([^']+)'/);
+        const serverVersion = match ? match[1] : null;
+
+        if (serverVersion && serverVersion !== VERSION) {
+            console.log(`Version mismatch: server ${serverVersion} != local ${VERSION}. Force reloading...`);
+            await window.app.forceReload();
+        } else {
+            localStorage.setItem('app_version', VERSION);
+        }
+    } catch (err) {
+        console.warn('Network version check failed:', err);
     }
 }
 
