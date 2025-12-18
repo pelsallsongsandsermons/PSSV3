@@ -149,6 +149,9 @@ export default {
         // Global helper for the onclick inline attribute
         window.saveLastPlayed = (title) => {
             localStorage.setItem('lastPlayedSong', JSON.stringify({ title: title }));
+            // Clear any existing playlist queue so single songs don't continue playing
+            localStorage.removeItem('randomQueue');
+            localStorage.removeItem('playlistReturn');
         };
 
         const filterList = () => {
