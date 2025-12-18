@@ -39,10 +39,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Register Service Worker
     if ('serviceWorker' in navigator) {
+        // Handle controller change (e.g. new SW taking over)
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('Service Worker controller changed. Reloading page to sync...');
+            window.location.reload();
+        });
+
         try {
             // Use relative path for GitHub Pages compatibility
             const registration = await navigator.serviceWorker.register('./sw.js');
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
+
+            // Expose registration for version checking
+            window.app.swRegistration = registration;
 
             // Check for updates
             registration.onupdatefound = () => {
@@ -192,6 +201,13 @@ async function checkVersion() {
             }
 
             console.log(`VERSION MISMATCH! Scaling up: local(${VERSION}) != server(${serverVersion})`);
+
+            // Trigger Service Worker update check immediately
+            if (window.app.swRegistration) {
+                console.log('Triggering manual SW update check...');
+                window.app.swRegistration.update();
+            }
+
             sessionStorage.setItem('last_auto_update_attempt', serverVersion);
             await window.app.forceReload();
         } else if (serverVersion === VERSION) {
