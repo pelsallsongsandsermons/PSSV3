@@ -39,9 +39,22 @@ export default {
                 const artist = item.dataset.artist;
 
                 if (url) {
-                    // Open Sermon on Podbean directly
-                    const podbeanUrl = `https://pecharchive.podbean.com/e/${url}`;
-                    window.open(podbeanUrl, '_blank');
+                    // Check user preference - default to true if not explicitly 'false'
+                    const useCustomPlayer = localStorage.getItem('use_custom_player') !== 'false';
+
+                    if (useCustomPlayer) {
+                        // Navigate to custom sermon player
+                        const params = new URLSearchParams({
+                            slug: url,
+                            title: title,
+                            speaker: artist
+                        });
+                        window.location.hash = `#sermon-player?${params.toString()}`;
+                    } else {
+                        // Open Podbean on Podbean directly
+                        const podbeanUrl = `https://pecharchive.podbean.com/e/${url}`;
+                        window.open(podbeanUrl, '_blank');
+                    }
                 } else {
                     alert('No audio URL for this sermon');
                 }

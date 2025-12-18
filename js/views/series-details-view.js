@@ -178,8 +178,8 @@ function addClickListeners() {
                 return;
             }
 
-            // Check user preference
-            const useCustomPlayer = localStorage.getItem('use_custom_player') === 'true';
+            // Check user preference - default to true if not explicitly 'false'
+            const useCustomPlayer = localStorage.getItem('use_custom_player') !== 'false';
 
             if (useCustomPlayer) {
                 // Navigate to in-app sermon player
