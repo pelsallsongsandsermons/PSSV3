@@ -2,14 +2,13 @@
  * Service Worker
  * Handles caching and offline functionality
  */
-const CACHE_NAME = 'v3.1.101';
+const CACHE_NAME = 'v3.1.102';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './css/style.css',
     './js/app.js',
     './js/config.js',
-    './js/version.js',
     './js/router.js',
     './js/services/supabase-client.js',
     './manifest.json',

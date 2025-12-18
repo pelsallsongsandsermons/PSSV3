@@ -140,46 +140,64 @@ window.app.installPWA = async () => {
 };
 
 window.app.forceReload = async () => {
-    console.log('Force reloading app...');
-    if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (let registration of registrations) {
-            await registration.unregister();
+    console.log('Force reloading app (Full Reset)...');
+    try {
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (let registration of registrations) {
+                console.log('Unregistering SW:', registration.scope);
+                await registration.unregister();
+            }
         }
+        const cacheNames = await caches.keys();
+        for (let cacheName of cacheNames) {
+            console.log('Deleting cache:', cacheName);
+            await caches.delete(cacheName);
+        }
+
+        console.log('Clearing stored version and reloading...');
+        localStorage.removeItem('app_version');
+        sessionStorage.removeItem('last_auto_update_attempt');
+
+        // Give the browser a moment to process unregistrations
+        setTimeout(() => {
+            window.location.replace(window.location.origin + window.location.pathname + '?v=' + Date.now());
+        }, 500);
+    } catch (err) {
+        console.error('Force reload failed:', err);
+        window.location.reload(true);
     }
-    const cacheNames = await caches.keys();
-    for (let cacheName of cacheNames) {
-        await caches.delete(cacheName);
-    }
-    localStorage.setItem('app_version', VERSION);
-    window.location.reload(true);
 };
 
 async function checkVersion() {
     try {
+        console.log(`Checking version. Current run-time: ${VERSION}`);
+
         // Fetch config.js with cache-busting timestamp to see the actual server version
-        const response = await fetch(`./js/config.js?v=${Date.now()}`);
+        const response = await fetch(`./js/config.js?v=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) return;
 
         const text = await response.text();
-        // Regex to match VERSION in CONFIG object
-        const match = text.match(/VERSION:\s*'([^']+)'/);
+        // Regex to match VERSION in CONFIG object (more flexible)
+        const match = text.match(/VERSION:\s*['"]([^'"]+)['"]/);
         const serverVersion = match ? match[1] : null;
+
+        console.log(`Server version detected: ${serverVersion}`);
 
         if (serverVersion && serverVersion !== VERSION) {
             // Loop prevention: check if we've already tried to update to this version
             const lastAttempt = sessionStorage.getItem('last_auto_update_attempt');
             if (lastAttempt === serverVersion) {
-                console.warn(`Already attempted to update to ${serverVersion} in this session. Skipping to avoid loop.`);
+                console.warn(`Already attempted update to ${serverVersion}. Skipping reload to avoid loop.`);
                 return;
             }
 
-            console.log(`Version mismatch: server ${serverVersion} != local ${VERSION}. Force reloading...`);
+            console.log(`VERSION MISMATCH! Scaling up: local(${VERSION}) != server(${serverVersion})`);
             sessionStorage.setItem('last_auto_update_attempt', serverVersion);
             await window.app.forceReload();
-        } else {
+        } else if (serverVersion === VERSION) {
+            console.log('App version is up to date.');
             localStorage.setItem('app_version', VERSION);
-            // Clear attempt flag if we are on the correct version
             sessionStorage.removeItem('last_auto_update_attempt');
         }
     } catch (err) {
