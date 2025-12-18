@@ -157,7 +157,6 @@ window.app.forceReload = async () => {
 
         console.log('Clearing stored version and reloading...');
         localStorage.removeItem('app_version');
-        sessionStorage.removeItem('last_auto_update_attempt');
 
         // Give the browser a moment to process unregistrations
         setTimeout(() => {
