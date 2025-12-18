@@ -165,10 +165,20 @@ async function checkVersion() {
         const serverVersion = match ? match[1] : null;
 
         if (serverVersion && serverVersion !== VERSION) {
+            // Loop prevention: check if we've already tried to update to this version
+            const lastAttempt = sessionStorage.getItem('last_auto_update_attempt');
+            if (lastAttempt === serverVersion) {
+                console.warn(`Already attempted to update to ${serverVersion} in this session. Skipping to avoid loop.`);
+                return;
+            }
+
             console.log(`Version mismatch: server ${serverVersion} != local ${VERSION}. Force reloading...`);
+            sessionStorage.setItem('last_auto_update_attempt', serverVersion);
             await window.app.forceReload();
         } else {
             localStorage.setItem('app_version', VERSION);
+            // Clear attempt flag if we are on the correct version
+            sessionStorage.removeItem('last_auto_update_attempt');
         }
     } catch (err) {
         console.warn('Network version check failed:', err);
