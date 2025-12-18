@@ -138,14 +138,30 @@ window.app.installPWA = async () => {
     }
 };
 
+window.app.forceReload = async () => {
+    console.log('Force reloading app...');
+    if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+            await registration.unregister();
+        }
+    }
+    const cacheNames = await caches.keys();
+    for (let cacheName of cacheNames) {
+        await caches.delete(cacheName);
+    }
+    localStorage.setItem('app_version', VERSION);
+    window.location.reload(true);
+};
+
 function checkVersion() {
     const storedVersion = localStorage.getItem('app_version');
     if (storedVersion && storedVersion !== VERSION) {
-        console.log(`Version mismatch: stored ${storedVersion} != current ${VERSION}. Cleaning up...`);
-        // Optional: clear cache or local storage if needed for breaking changes
-        // For now, just update the stored version
+        console.log(`Version mismatch: stored ${storedVersion} != current ${VERSION}. Force reloading...`);
+        window.app.forceReload();
+    } else {
+        localStorage.setItem('app_version', VERSION);
     }
-    localStorage.setItem('app_version', VERSION);
 }
 
 function showUpdatePrompt() {

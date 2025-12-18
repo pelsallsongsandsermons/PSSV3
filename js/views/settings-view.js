@@ -60,6 +60,13 @@ export default {
                             <span class="setting-description" id="settings-version">Loading...</span>
                         </div>
                     </div>
+                    <div class="setting-item action-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Troubleshooting</span>
+                            <span class="setting-description">Force reload to clear cache and update</span>
+                        </div>
+                        <button id="btn-force-reload" class="action-btn">Reload App</button>
+                    </div>
                 </div>
 
                 <div class="about-text">
@@ -107,6 +114,16 @@ export default {
                     document.body.classList.add('dark-mode');
                 } else {
                     document.body.classList.remove('dark-mode');
+                }
+            });
+        }
+
+        // Force Reload button
+        const btnReload = document.getElementById('btn-force-reload');
+        if (btnReload) {
+            btnReload.addEventListener('click', async () => {
+                if (confirm('This will clear the app cache and reload. Your playlists will be preserved. Proceed?')) {
+                    await window.app.forceReload();
                 }
             });
         }
