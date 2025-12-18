@@ -1571,7 +1571,7 @@ body {
 /* Playlist Card */
 .playlist-card {
     background-color: var(--secondary-background);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px;
     margin-bottom: 12px;
@@ -1583,13 +1583,13 @@ body {
 }
 
 .playlist-card:active {
-    background-color: #37474F;
+    background-color: var(--bg-input);
 }
 
 .playlist-info h3 {
     margin: 0 0 4px 0;
     font-size: 1.1rem;
-    color: white;
+    color: var(--text-main);
 }
 
 .playlist-info p {
@@ -1711,7 +1711,7 @@ body {
 .playlist-delete-btn {
     background: none;
     border: none;
-    color: #aeaeae;
+    color: var(--text-main);
     cursor: pointer;
     font-size: 1.1rem;
     padding: 8px;

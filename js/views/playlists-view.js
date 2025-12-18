@@ -28,7 +28,7 @@ export default {
         return `
             <div class="view playlists-view">
                 <div class="content-wrapper">
-                    <h2 style="color:white; margin-bottom: 20px;">Your Playlists</h2>
+                    <h2 style="margin-bottom: 20px;">Your Playlists</h2>
                     <div id="playlists-list">
                         ${playlistsHtml}
                     </div>

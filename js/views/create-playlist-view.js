@@ -37,7 +37,7 @@ export default {
 
         return `
             <div class="view create-playlist-view">
-                <h2 style="color:white; margin-bottom: 20px;">${editMode ? 'Edit Playlist' : 'Create Playlist'}</h2>
+                <h2 style="margin-bottom: 20px;">${editMode ? 'Edit Playlist' : 'Create Playlist'}</h2>
                 
                 <div class="create-form-group">
                     <label for="playlist-name">Playlist Name</label>
