@@ -15,6 +15,7 @@ export class Router {
             'sermon-player': () => import('./views/sermon-player-view.js'),
             'playlists': () => import('./views/playlists-view.js'),
             'create-playlist': () => import('./views/create-playlist-view.js'),
+            'find-sermons': () => import('./views/find-sermons-view.js'),
         };
         this.contentContainer = document.getElementById('app-content');
 

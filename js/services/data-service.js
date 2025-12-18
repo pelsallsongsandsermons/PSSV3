@@ -57,15 +57,57 @@ export class DataService {
         return data;
     }
 
-    async searchSermons(query) {
-        if (!query) return [];
+    async searchSermons(criteria = {}) {
+        const { title, bookRef, speaker } = criteria;
+
+        let query = this.supabase
+            .from('sermonList')
+            .select('*');
+
+        if (title) {
+            query = query.ilike('title', `%${title}%`);
+        }
+        if (bookRef) {
+            query = query.ilike('full_ref', `%${bookRef}%`);
+        }
+        if (speaker) {
+            query = query.eq('speaker', speaker);
+        }
+
+        query = query.order('date', { ascending: false });
+
+        const { data, error } = await query;
+        if (error) {
+            console.error('Error searching sermons:', error);
+            return [];
+        }
+        return data || [];
+    }
+
+    async getAllSermons() {
         const { data, error } = await this.supabase
             .from('sermonList')
             .select('*')
-            .ilike('title', `%${query}%`);
+            .order('date', { ascending: false });
 
-        if (error) return [];
-        return data;
+        if (error) {
+            console.error('Error fetching all sermons:', error);
+            return [];
+        }
+        return data || [];
+    }
+
+    async getSpeakers() {
+        const { data, error } = await this.supabase
+            .from('speakerNames')
+            .select('speaker')
+            .order('speaker', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching speakers:', error);
+            return [];
+        }
+        return data || [];
     }
 
     // --- Series ---

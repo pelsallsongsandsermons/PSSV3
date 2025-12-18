@@ -81,7 +81,7 @@ export default {
                     <a href="https://www.youtube.com/playlist?list=PL3BMLQCIh118y1UbPY_qnO3VYXltnMXZ0" target="_blank" class="home-action-btn">
                         <span>Live<br>Stream</span>
                     </a>
-                    <a href="#sermons" class="home-action-btn">
+                    <a href="#find-sermons" class="home-action-btn">
                         <span>Search<br>Sermons</span>
                     </a>
                 </div>

@@ -1731,3 +1731,170 @@ body {
 .playlist-delete-btn:hover {
     color: #ff4444;
 }
+
+/* ============================================
+   Find Sermons View
+   ============================================ */
+.find-sermons-view {
+    background-color: var(--primary-background);
+    min-height: 100%;
+}
+
+.find-sermons-view .content-wrapper {
+    padding: 16px;
+}
+
+.find-sermons-view h2 {
+    color: var(--text-main);
+    margin-bottom: 20px;
+}
+
+/* Search Form */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.search-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.search-row .search-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.search-row .search-input-wrapper input,
+.search-row .search-input-wrapper select {
+    width: 100%;
+    padding: 14px 40px 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    background-color: var(--secondary-background);
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-row .search-input-wrapper input::placeholder {
+    color: var(--text-secondary);
+}
+
+.search-row .search-input-wrapper select {
+    appearance: none;
+    cursor: pointer;
+}
+
+.search-row .search-input-wrapper .search-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.clear-btn {
+    background-color: var(--accent-color);
+    color: #000;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.clear-btn:active {
+    opacity: 0.8;
+}
+
+/* Search Action Buttons */
+.search-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.search-action-btn {
+    padding: 14px 24px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+}
+
+.search-action-btn.primary {
+    background-color: var(--accent-color);
+    color: #000;
+}
+
+.search-action-btn.secondary {
+    background-color: var(--accent-color);
+    color: #000;
+}
+
+.search-action-btn:active {
+    opacity: 0.8;
+}
+
+/* Results */
+.sermon-results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sermon-result-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--secondary-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.sermon-result-card:active {
+    background-color: var(--bg-input);
+}
+
+.sermon-result-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.sermon-result-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.sermon-result-info .sermon-date {
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+.sermon-play-icon {
+    color: var(--accent-color);
+    font-size: 1.8rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
