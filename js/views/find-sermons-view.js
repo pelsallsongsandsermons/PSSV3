@@ -101,12 +101,25 @@ export default {
             // Add click handlers
             resultsContainer.querySelectorAll('.sermon-result-card').forEach(card => {
                 card.addEventListener('click', () => {
-                    const url = card.dataset.url;
-                    if (url) {
-                        const podbeanUrl = `https://pecharchive.podbean.com/e/${url}`;
-                        window.open(podbeanUrl, '_blank');
-                    } else {
+                    const slug = card.dataset.url;
+                    const title = card.dataset.title;
+                    const speaker = card.dataset.speaker;
+
+                    if (!slug) {
                         alert('No audio URL for this sermon');
+                        return;
+                    }
+
+                    // Check if custom player is enabled
+                    const useCustomPlayer = localStorage.getItem('use_custom_player') !== 'false';
+
+                    if (useCustomPlayer) {
+                        // Navigate to custom sermon player
+                        window.location.hash = `#sermon-player?slug=${encodeURIComponent(slug)}&title=${encodeURIComponent(title)}&speaker=${encodeURIComponent(speaker)}`;
+                    } else {
+                        // Open Podbean externally
+                        const podbeanUrl = `https://pecharchive.podbean.com/e/${slug}`;
+                        window.open(podbeanUrl, '_blank');
                     }
                 });
             });
