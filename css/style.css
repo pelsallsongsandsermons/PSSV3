@@ -68,6 +68,13 @@ body {
     line-height: 1.5;
     overflow: hidden;
     /* Prevent body scroll, handle in #app-content */
+
+    /* Disable accidental text selection (stops dictionary popups on Android) */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 #app-container {
@@ -236,6 +243,22 @@ body {
 /* Utilities */
 .hidden {
     display: none !important;
+}
+
+/* Selectively re-enable text selection for actual content */
+.bible-verse,
+.sermon-description,
+.descriptive-text,
+.item-content,
+.about-text,
+.attribution-text,
+#sermon-description,
+input,
+textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 /* Loading Spinner */
