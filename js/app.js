@@ -32,6 +32,11 @@ function initializeSettings() {
             console.log(`Initialized default setting: ${key} = ${value}`);
         }
     }
+
+    // Clean up legacy keys if they exist in localStorage
+    if (localStorage.getItem('last_auto_update_attempt')) {
+        localStorage.removeItem('last_auto_update_attempt');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -222,8 +227,10 @@ async function checkVersion() {
         if (serverVersion && serverVersion !== VERSION) {
             // Loop prevention: check if we've already tried to update to this version
             const lastAttempt = sessionStorage.getItem('last_auto_update_attempt');
-            if (lastAttempt === serverVersion) {
-                console.warn(`Already attempted update to ${serverVersion}. Skipping reload to avoid loop.`);
+            const retryCount = parseInt(sessionStorage.getItem('update_retry_count') || '0');
+
+            if (lastAttempt === serverVersion && retryCount >= 1) {
+                console.warn(`Already attempted update to ${serverVersion} twice. Skipping reload to avoid loop.`);
                 return;
             }
 
@@ -236,11 +243,13 @@ async function checkVersion() {
             }
 
             sessionStorage.setItem('last_auto_update_attempt', serverVersion);
+            sessionStorage.setItem('update_retry_count', (retryCount + 1).toString());
             await window.app.forceReload();
         } else if (serverVersion === VERSION) {
             console.log('App version is up to date.');
             localStorage.setItem('app_version', VERSION);
             sessionStorage.removeItem('last_auto_update_attempt');
+            sessionStorage.removeItem('update_retry_count');
         }
     } catch (err) {
         console.warn('Network version check failed:', err);
