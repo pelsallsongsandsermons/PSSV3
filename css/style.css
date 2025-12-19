@@ -1400,6 +1400,77 @@ textarea {
     cursor: pointer;
 }
 
+/* Date Modal Specifics */
+.date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.date-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.date-field label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.date-field input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-input);
+    color: var(--text-main);
+    font-family: inherit;
+}
+
+.shortcut-group {
+    margin-bottom: 24px;
+}
+
+.shortcut-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.full-width-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
 /* Random Playlist Display */
 .random-playlist {
     position: fixed;
@@ -1586,7 +1657,67 @@ textarea {
     /* Space for FAB */
 }
 
-/* Floating Action Button for Create */
+/* Sermon Search Actions */
+.search-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.search-action-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+}
+
+.search-action-btn.primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.search-action-btn.secondary {
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+/* Result Cards Specifics */
+.sermon-result-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.sermon-result-card h3 {
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+}
+
+.sermon-result-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.sermon-date {
+    font-size: 0.75rem !important;
+    margin-top: 4px !important;
+    opacity: 0.8;
+}
+
+.sermon-play-icon {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
 .fab-btn {
     position: fixed;
     bottom: 24px;

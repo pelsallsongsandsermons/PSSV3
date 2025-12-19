@@ -104,6 +104,34 @@
                 onclick="document.getElementById('ios-install-modal').classList.add('hidden')">Got it</button>
         </div>
     </div>
+
+    <!-- Date Search Modal -->
+    <div id="date-search-modal" class="modal hidden" onclick="this.classList.add('hidden')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3>Search Dates</h3>
+
+            <div class="date-input-group">
+                <div class="date-field">
+                    <label for="from-date">From:</label>
+                    <input type="date" id="from-date">
+                </div>
+                <div class="date-field">
+                    <label for="to-date">To:</label>
+                    <input type="date" id="to-date">
+                </div>
+            </div>
+
+            <div class="shortcut-group">
+                <button id="last-3-months-btn" class="shortcut-btn">Last 3 Months</button>
+            </div>
+
+            <div class="modal-footer">
+                <button id="apply-date-search" class="btn-primary full-width-btn">Search</button>
+                <button class="btn-secondary full-width-btn"
+                    onclick="document.getElementById('date-search-modal').classList.add('hidden')">Cancel</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -46,6 +46,7 @@ export default {
 
                         <!-- Action Buttons -->
                         <div class="search-actions">
+                            <button id="search-dates-btn" class="search-action-btn primary">Search Dates</button>
                             <button id="clear-all-btn" class="search-action-btn secondary">Clear All</button>
                         </div>
                     </div>
@@ -67,7 +68,18 @@ export default {
         const clearTitleBtn = document.getElementById('clear-title');
         const clearBookrefBtn = document.getElementById('clear-bookref');
         const clearSpeakerBtn = document.getElementById('clear-speaker');
+
+        // Date Search Elements
+        const searchDatesBtn = document.getElementById('search-dates-btn');
         const clearAllBtn = document.getElementById('clear-all-btn');
+        const dateModal = document.getElementById('date-search-modal');
+        const fromDateInput = document.getElementById('from-date');
+        const toDateInput = document.getElementById('to-date');
+        const applyDateBtn = document.getElementById('apply-date-search');
+        const last3MonthsBtn = document.getElementById('last-3-months-btn');
+
+        let startDate = null;
+        let endDate = null;
 
         // Update Header Title
         const headerTitle = document.querySelector('#main-header h1');
@@ -76,13 +88,26 @@ export default {
         // Fetch all sermons once for client-side filtering
         let allSermons = await dataService.getAllSermons();
 
+        // Helper to parse DD MMM YYYY into a Date object
+        const parseSermonDate = (dateStr) => {
+            if (!dateStr) return new Date(0);
+            return new Date(dateStr); // Most browsers handle "18 Dec 2024" correctly
+        };
+
         const renderResults = (sermons) => {
             if (sermons.length === 0) {
                 resultsContainer.innerHTML = '<div class="no-results">No sermons found</div>';
                 return;
             }
 
-            resultsContainer.innerHTML = sermons.map(sermon => `
+            // Sort chronologically (Newest first)
+            const sorted = [...sermons].sort((a, b) => {
+                const dateA = parseSermonDate(a.date);
+                const dateB = parseSermonDate(b.date);
+                return dateB - dateA;
+            });
+
+            resultsContainer.innerHTML = sorted.map(sermon => `
                 <div class="sermon-result-card" 
                      data-url="${sermon.permalink_url || ''}"
                      data-title="${sermon.title}"
@@ -144,6 +169,17 @@ export default {
                 filtered = filtered.filter(s => s.speaker === speaker);
             }
 
+            // Date filtering
+            if (startDate) {
+                filtered = filtered.filter(s => parseSermonDate(s.date) >= startDate);
+            }
+            if (endDate) {
+                // Set endDate to end of day
+                const adjustedEnd = new Date(endDate);
+                adjustedEnd.setHours(23, 59, 59, 999);
+                filtered = filtered.filter(s => parseSermonDate(s.date) <= adjustedEnd);
+            }
+
             renderResults(filtered);
         };
 
@@ -152,6 +188,38 @@ export default {
         bookrefInput.addEventListener('input', filterSermons);
         speakerSelect.addEventListener('change', filterSermons);
 
+        // Date Search Modal Logic
+        searchDatesBtn.addEventListener('click', () => {
+            dateModal.classList.remove('hidden');
+        });
+
+        applyDateBtn.addEventListener('click', () => {
+            startDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+            endDate = toDateInput.value ? new Date(toDateInput.value) : null;
+
+            // Set start of day for start date
+            if (startDate) startDate.setHours(0, 0, 0, 0);
+
+            dateModal.classList.add('hidden');
+            filterSermons();
+        });
+
+        last3MonthsBtn.addEventListener('click', () => {
+            const now = new Date();
+            const threeMonthsAgo = new Date();
+            threeMonthsAgo.setMonth(now.getMonth() - 3);
+            threeMonthsAgo.setHours(0, 0, 0, 0);
+
+            startDate = threeMonthsAgo;
+            endDate = now;
+
+            // Sync inputs with the shortcut values
+            fromDateInput.value = startDate.toISOString().split('T')[0];
+            toDateInput.value = endDate.toISOString().split('T')[0];
+
+            dateModal.classList.add('hidden');
+            filterSermons();
+        });
 
         // Clear buttons
         clearTitleBtn.addEventListener('click', () => {
@@ -173,6 +241,10 @@ export default {
             titleInput.value = '';
             bookrefInput.value = '';
             speakerSelect.value = '';
+            startDate = null;
+            endDate = null;
+            fromDateInput.value = '';
+            toDateInput.value = '';
             resultsContainer.innerHTML = '';
         });
     }
