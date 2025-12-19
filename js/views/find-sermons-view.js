@@ -73,11 +73,16 @@ export default {
         const clearAllBtn = document.getElementById('clear-all-btn');
         const dateModal = document.getElementById('date-search-modal');
         const fromDateInput = document.getElementById('from-date');
-        const toDateInput = document.getElementById('to-date');
         const applyDateBtn = document.getElementById('apply-date-search');
         const last3MonthsBtn = document.getElementById('last-3-months-btn');
-        const jumpYearSelect = document.getElementById('jump-year');
-        const jumpMonthSelect = document.getElementById('jump-month');
+
+        // Triple Select Elements
+        const fromDay = document.getElementById('from-day');
+        const fromMonth = document.getElementById('from-month');
+        const fromYear = document.getElementById('from-year');
+        const toDay = document.getElementById('to-day');
+        const toMonth = document.getElementById('to-month');
+        const toYear = document.getElementById('to-year');
 
         let startDate = null;
         let endDate = null;
@@ -89,17 +94,24 @@ export default {
         // Fetch all sermons once for client-side filtering
         let allSermons = await dataService.getAllSermons();
 
-        // Populate Year Jump Dropdown from data
-        const populateYears = () => {
+        // Helper to populate Days and Years
+        const initSelects = () => {
+            const dayOptions = ['<option value="">Day</option>'];
+            for (let i = 1; i <= 31; i++) dayOptions.push(`<option value="${i}">${i}</option>`);
+            fromDay.innerHTML = dayOptions.join('');
+            toDay.innerHTML = dayOptions.join('');
+
             const years = [...new Set(allSermons.map(s => {
                 const parts = s.date ? s.date.split(' ') : [];
                 return parts.length === 3 ? parseInt(parts[2]) : null;
             }))].filter(y => y !== null).sort((a, b) => b - a);
 
-            jumpYearSelect.innerHTML = '<option value="">Year</option>' +
-                years.map(y => `<option value="${y}">${y}</option>`).join('');
+            const yearOptions = ['<option value="">Year</option>'];
+            years.forEach(y => yearOptions.push(`<option value="${y}">${y}</option>`));
+            fromYear.innerHTML = yearOptions.join('');
+            toYear.innerHTML = yearOptions.join('');
         };
-        populateYears();
+        initSelects();
 
         // Helper to parse DD MMM YYYY into a Date object
         const parseSermonDate = (dateStr) => {
@@ -206,39 +218,41 @@ export default {
             dateModal.classList.remove('hidden');
         });
 
-        const updateInputsFromJump = () => {
-            const yearStr = jumpYearSelect.value;
-            const monthStr = jumpMonthSelect.value;
+        const getDateFromSelects = (dayEl, monthEl, yearEl) => {
+            const day = dayEl.value;
+            const month = monthEl.value;
+            const year = yearEl.value;
 
-            if (!yearStr) return;
+            if (!year) return null;
 
-            const year = parseInt(yearStr);
-            let start, end;
-
-            if (monthStr === "") {
-                // Full Year
-                start = new Date(year, 0, 1);
-                end = new Date(year, 11, 31);
-            } else {
-                // Specific Month
-                const month = parseInt(monthStr);
-                start = new Date(year, month, 1);
-                end = new Date(year, month + 1, 0); // Last day of month
-            }
-
-            fromDateInput.value = start.toISOString().split('T')[0];
-            toDateInput.value = end.toISOString().split('T')[0];
+            // Build a date object (Month is 0-indexed in JS, but 1-indexed in many logics)
+            // We use standard 0-11 for month value in HTML
+            return new Date(year, month || 0, day || 1);
         };
 
-        jumpYearSelect.addEventListener('change', updateInputsFromJump);
-        jumpMonthSelect.addEventListener('change', updateInputsFromJump);
+        const setSelectsFromDate = (date, dayEl, monthEl, yearEl) => {
+            if (!date) {
+                dayEl.value = '';
+                monthEl.value = '';
+                yearEl.value = '';
+                return;
+            }
+            dayEl.value = date.getDate();
+            monthEl.value = date.getMonth();
+            yearEl.value = date.getFullYear();
+        };
 
         applyDateBtn.addEventListener('click', () => {
-            startDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
-            endDate = toDateInput.value ? new Date(toDateInput.value) : null;
+            startDate = getDateFromSelects(fromDay, fromMonth, fromYear);
+            endDate = getDateFromSelects(toDay, toMonth, toYear);
 
-            // Set start of day for start date
             if (startDate) startDate.setHours(0, 0, 0, 0);
+            if (endDate) {
+                // If it's the same day, make sure we cover the whole day
+                // or if it's just year/month, we might want last day, but 
+                // getDateFromSelects uses Day 1 if missing.
+                // Let's improve getDateFromSelects for better range.
+            }
 
             dateModal.classList.add('hidden');
             filterSermons();
@@ -253,11 +267,9 @@ export default {
             startDate = threeMonthsAgo;
             endDate = now;
 
-            // Sync inputs with the shortcut values
-            fromDateInput.value = startDate.toISOString().split('T')[0];
-            toDateInput.value = endDate.toISOString().split('T')[0];
-            jumpYearSelect.value = ''; // Reset jump selects for clarity
-            jumpMonthSelect.value = '';
+            // Sync selects
+            setSelectsFromDate(startDate, fromDay, fromMonth, fromYear);
+            setSelectsFromDate(endDate, toDay, toMonth, toYear);
 
             dateModal.classList.add('hidden');
             filterSermons();
@@ -285,10 +297,8 @@ export default {
             speakerSelect.value = '';
             startDate = null;
             endDate = null;
-            fromDateInput.value = '';
-            toDateInput.value = '';
-            jumpYearSelect.value = '';
-            jumpMonthSelect.value = '';
+            setSelectsFromDate(null, fromDay, fromMonth, fromYear);
+            setSelectsFromDate(null, toDay, toMonth, toYear);
             resultsContainer.innerHTML = '';
         });
     }

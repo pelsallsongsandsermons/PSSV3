@@ -1412,45 +1412,49 @@ textarea {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
+    gap: 8px;
 }
 
 .date-field label {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
 }
 
-.date-field input {
+.date-select-row {
+    display: flex;
+    gap: 8px;
     width: 100%;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+}
+
+.date-select-row select {
+    flex: 1;
+    padding: 10px 8px;
     background: var(--bg-input);
+    border: 1px solid var(--border-color);
     color: var(--text-main);
+    border-radius: 8px;
     font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    min-width: 0;
+    /* Prevent overflow */
+}
+
+.date-select-row .day-select {
+    flex: 0 0 70px;
+}
+
+.date-select-row .month-select {
+    flex: 1;
+}
+
+.date-select-row .year-select {
+    flex: 0 0 90px;
 }
 
 .shortcut-group {
     margin-bottom: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.quick-jump-row {
-    display: flex;
-    gap: 10px;
-}
-
-.quick-jump-row select {
-    flex: 1;
-    padding: 12px;
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.95rem;
 }
 
 .shortcut-btn {
