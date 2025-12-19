@@ -102,6 +102,7 @@ export default {
                             <button class="download-btn" data-format="docx"><i class="fas fa-file-word"></i> .docx</button>
                             <button class="download-btn" data-format="pdf"><i class="fas fa-file-pdf"></i> .pdf</button>
                         </div>
+                        <button id="btn-copy-transcript" class="btn-primary full-width-btn"><i class="fas fa-copy"></i> Copy to Clipboard</button>
                         <button class="btn-secondary full-width-btn" id="close-transcription">Close</button>
                     </div>
                 </div>
@@ -285,6 +286,27 @@ export default {
                     transcriptionService.downloadTranscript(text, filename, format);
                 });
             });
+
+            // Copy to Clipboard Button
+            const copyBtn = document.getElementById('btn-copy-transcript');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', async () => {
+                    const text = transcriptText.textContent;
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        const originalHtml = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied to clipboard';
+                        copyBtn.disabled = true;
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalHtml;
+                            copyBtn.disabled = false;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Copy failed:', err);
+                        alert('Failed to copy to clipboard.');
+                    }
+                });
+            }
         }
     }
 };
