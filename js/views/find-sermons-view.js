@@ -76,6 +76,8 @@ export default {
         const toDateInput = document.getElementById('to-date');
         const applyDateBtn = document.getElementById('apply-date-search');
         const last3MonthsBtn = document.getElementById('last-3-months-btn');
+        const jumpYearSelect = document.getElementById('jump-year');
+        const jumpMonthSelect = document.getElementById('jump-month');
 
         let startDate = null;
         let endDate = null;
@@ -86,6 +88,18 @@ export default {
 
         // Fetch all sermons once for client-side filtering
         let allSermons = await dataService.getAllSermons();
+
+        // Populate Year Jump Dropdown from data
+        const populateYears = () => {
+            const years = [...new Set(allSermons.map(s => {
+                const parts = s.date ? s.date.split(' ') : [];
+                return parts.length === 3 ? parseInt(parts[2]) : null;
+            }))].filter(y => y !== null).sort((a, b) => b - a);
+
+            jumpYearSelect.innerHTML = '<option value="">Year</option>' +
+                years.map(y => `<option value="${y}">${y}</option>`).join('');
+        };
+        populateYears();
 
         // Helper to parse DD MMM YYYY into a Date object
         const parseSermonDate = (dateStr) => {
@@ -192,6 +206,33 @@ export default {
             dateModal.classList.remove('hidden');
         });
 
+        const updateInputsFromJump = () => {
+            const yearStr = jumpYearSelect.value;
+            const monthStr = jumpMonthSelect.value;
+
+            if (!yearStr) return;
+
+            const year = parseInt(yearStr);
+            let start, end;
+
+            if (monthStr === "") {
+                // Full Year
+                start = new Date(year, 0, 1);
+                end = new Date(year, 11, 31);
+            } else {
+                // Specific Month
+                const month = parseInt(monthStr);
+                start = new Date(year, month, 1);
+                end = new Date(year, month + 1, 0); // Last day of month
+            }
+
+            fromDateInput.value = start.toISOString().split('T')[0];
+            toDateInput.value = end.toISOString().split('T')[0];
+        };
+
+        jumpYearSelect.addEventListener('change', updateInputsFromJump);
+        jumpMonthSelect.addEventListener('change', updateInputsFromJump);
+
         applyDateBtn.addEventListener('click', () => {
             startDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
             endDate = toDateInput.value ? new Date(toDateInput.value) : null;
@@ -215,6 +256,8 @@ export default {
             // Sync inputs with the shortcut values
             fromDateInput.value = startDate.toISOString().split('T')[0];
             toDateInput.value = endDate.toISOString().split('T')[0];
+            jumpYearSelect.value = ''; // Reset jump selects for clarity
+            jumpMonthSelect.value = '';
 
             dateModal.classList.add('hidden');
             filterSermons();
@@ -244,6 +287,8 @@ export default {
             endDate = null;
             fromDateInput.value = '';
             toDateInput.value = '';
+            jumpYearSelect.value = '';
+            jumpMonthSelect.value = '';
             resultsContainer.innerHTML = '';
         });
     }

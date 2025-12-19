@@ -1432,6 +1432,25 @@ textarea {
 
 .shortcut-group {
     margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quick-jump-row {
+    display: flex;
+    gap: 10px;
+}
+
+.quick-jump-row select {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
 }
 
 .shortcut-btn {
