@@ -7,6 +7,9 @@ export default {
         // Load current settings from localStorage
         const useCustomPlayer = localStorage.getItem('use_custom_player') !== 'false'; // Default true
         const keepScreenOn = localStorage.getItem('keep_screen_on') !== 'false'; // Default true
+        const transcriptionEnabled = localStorage.getItem('transcription_enabled') === 'true';
+        const deepgramApiKey = localStorage.getItem('deepgram_api_key') || '';
+        const deepgramKeywords = localStorage.getItem('deepgram_keywords') || 'Scripture, ministry, sermon, gospel';
 
         return `
             <div class="view settings-view">
@@ -39,6 +42,39 @@ export default {
                             <input type="checkbox" id="toggle-custom-player" ${useCustomPlayer ? 'checked' : ''}>
                             <span class="toggle-slider"></span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Transcription</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Enable Transcription</span>
+                            <span class="setting-description">Transcribe sermons to text using Deepgram</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-transcription" ${transcriptionEnabled ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="transcription-settings" class="${transcriptionEnabled ? '' : 'hidden'}">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Deepgram API Key</span>
+                                <span class="setting-description">Enter your Deepgram API Key</span>
+                            </div>
+                            <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Keyterm Phrases</span>
+                                <span class="setting-description">Comma-separated phrases for context</span>
+                            </div>
+                            <input type="text" id="deepgram-keywords" class="setting-input" value="${deepgramKeywords}" placeholder="e.g. Scripture, ministry...">
+                        </div>
                     </div>
                 </div>
 
@@ -98,6 +134,35 @@ export default {
             screenToggle.addEventListener('change', (e) => {
                 localStorage.setItem('keep_screen_on', e.target.checked);
                 console.log('Keep screen on setting:', e.target.checked);
+            });
+        }
+
+        // Transcription Toggles
+        const transcriptionToggle = document.getElementById('toggle-transcription');
+        const transcriptionSettings = document.getElementById('transcription-settings');
+        const apiKeyInput = document.getElementById('deepgram-api-key');
+        const keywordsInput = document.getElementById('deepgram-keywords');
+
+        if (transcriptionToggle) {
+            transcriptionToggle.addEventListener('change', (e) => {
+                const isEnabled = e.target.checked;
+                localStorage.setItem('transcription_enabled', isEnabled);
+                if (transcriptionSettings) {
+                    if (isEnabled) transcriptionSettings.classList.remove('hidden');
+                    else transcriptionSettings.classList.add('hidden');
+                }
+            });
+        }
+
+        if (apiKeyInput) {
+            apiKeyInput.addEventListener('change', (e) => {
+                localStorage.setItem('deepgram_api_key', e.target.value.trim());
+            });
+        }
+
+        if (keywordsInput) {
+            keywordsInput.addEventListener('change', (e) => {
+                localStorage.setItem('deepgram_keywords', e.target.value.trim());
             });
         }
         // Theme Toggle

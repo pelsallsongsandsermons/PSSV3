@@ -3,8 +3,10 @@
  * Custom in-app audio player for sermons
  */
 import { PodbeanService } from '../services/podbean-service.js';
+import { TranscriptionService } from '../services/transcription-service.js';
 
 let podbeanService = null;
+let transcriptionService = null;
 
 export default {
     render: async (params) => {
@@ -33,11 +35,33 @@ export default {
                         <div class="loading-spinner">Loading audio...</div>
                     </div>
                     
+                    <div id="transcribe-action-container" class="transcribe-container hidden">
+                        <button id="btn-transcribe" class="btn-primary">
+                            <i class="fas fa-file-alt"></i> Transcribe Sermon
+                        </button>
+                    </div>
+
                     <div class="sermon-description-container">
                         <h3>Description</h3>
                         <div id="sermon-description" class="sermon-description">
                             <div class="loading-spinner">Loading...</div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Transcription Result Modal -->
+                <div id="transcription-modal" class="modal hidden">
+                    <div class="modal-content transcription-modal-content">
+                        <h3>Sermon Transcription</h3>
+                        <div class="transcript-scroll-box">
+                            <pre id="transcript-text"></pre>
+                        </div>
+                        <div class="download-group">
+                            <button class="download-btn" data-format="txt"><i class="fas fa-file-alt"></i> .txt</button>
+                            <button class="download-btn" data-format="docx"><i class="fas fa-file-word"></i> .docx</button>
+                            <button class="download-btn" data-format="pdf"><i class="fas fa-file-pdf"></i> .pdf</button>
+                        </div>
+                        <button class="btn-secondary full-width-btn" id="close-transcription">Close</button>
                     </div>
                 </div>
             </div>
@@ -63,10 +87,10 @@ export default {
         const descriptionEl = document.getElementById('sermon-description');
 
         if (episode && episode.mp3Url) {
-            // Create audio player
+            // Create audio player (autoplay removed)
             audioContainer.innerHTML = `
                 <div class="audio-controls">
-                    <audio id="sermon-audio" controls autoplay>
+                    <audio id="sermon-audio" controls>
                         <source src="${episode.mp3Url}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>
@@ -106,6 +130,68 @@ export default {
         const headerTitle = document.querySelector('#main-header h1');
         if (headerTitle) {
             headerTitle.textContent = 'Sermon Player';
+        }
+
+        // Transcription Logic
+        const transcriptionEnabled = localStorage.getItem('transcription_enabled') === 'true';
+        if (transcriptionEnabled) {
+            const transcribeBtnContainer = document.getElementById('transcribe-action-container');
+            if (transcribeBtnContainer) transcribeBtnContainer.classList.remove('hidden');
+
+            const transcribeBtn = document.getElementById('btn-transcribe');
+            const transcriptionModal = document.getElementById('transcription-modal');
+            const transcriptText = document.getElementById('transcript-text');
+            const closeTranscription = document.getElementById('close-transcription');
+
+            if (transcribeBtn) {
+                transcribeBtn.addEventListener('click', async () => {
+                    const apiKey = localStorage.getItem('deepgram_api_key');
+                    const keywords = localStorage.getItem('deepgram_keywords');
+
+                    if (!apiKey) {
+                        alert('Deepgram API Key is missing. Please add it in Settings.');
+                        return;
+                    }
+
+                    if (!episode || !episode.mp3Url) {
+                        alert('Sermon audio URL not found.');
+                        return;
+                    }
+
+                    transcribeBtn.disabled = true;
+                    transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
+
+                    if (!transcriptionService) transcriptionService = new TranscriptionService();
+
+                    try {
+                        const transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords);
+                        transcriptText.textContent = transcript;
+                        transcriptionModal.classList.remove('hidden');
+                    } catch (err) {
+                        console.error('Transcription error:', err);
+                        alert(`Transcription failed: ${err.message}`);
+                    } finally {
+                        transcribeBtn.disabled = false;
+                        transcribeBtn.innerHTML = '<i class="fas fa-file-alt"></i> Transcribe Sermon';
+                    }
+                });
+            }
+
+            if (closeTranscription) {
+                closeTranscription.addEventListener('click', () => {
+                    transcriptionModal.classList.add('hidden');
+                });
+            }
+
+            // Download Buttons
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const format = btn.dataset.format;
+                    const text = transcriptText.textContent;
+                    const filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                    transcriptionService.downloadTranscript(text, filename, format);
+                });
+            });
         }
     }
 };

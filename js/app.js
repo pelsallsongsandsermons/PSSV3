@@ -21,7 +21,9 @@ function initializeSettings() {
     const defaults = {
         'theme': 'dark',
         'use_custom_player': 'true',
-        'keep_screen_on': 'true'
+        'keep_screen_on': 'true',
+        'transcription_enabled': 'false',
+        'deepgram_keywords': 'Scripture, ministry, sermon, gospel'
     };
 
     for (const [key, value] of Object.entries(defaults)) {

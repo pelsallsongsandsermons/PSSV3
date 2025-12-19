@@ -2126,3 +2126,78 @@ textarea {
 .attribution-text p {
     margin-bottom: 8px;
 }
+/* --- Transcription Styles --- */
+.transcribe-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.transcription-modal-content {
+    max-width: 90%;
+    width: 600px;
+}
+
+.transcript-scroll-box {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 15px 0;
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#transcript-text {
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.download-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.download-btn {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.download-btn:active {
+    background-color: var(--shadow-color);
+}
+
+.setting-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+/* Modal sizing for transcription specifically */
+#transcription-modal .modal-content {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
