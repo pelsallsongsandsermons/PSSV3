@@ -24,7 +24,7 @@ export default {
 
         // Show loading state initially
         return `
-            <div class="view sermon-player-view" data-slug="${slug}">
+            <div class="view sermon-player-view" data-slug="${slug}" data-title="${title}">
                 <div class="sermon-player-header">
                     <h2 class="sermon-title">${title}</h2>
                     <p class="sermon-speaker">${speaker}</p>
@@ -188,7 +188,8 @@ export default {
                 btn.addEventListener('click', () => {
                     const format = btn.dataset.format;
                     const text = transcriptText.textContent;
-                    const filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                    const currentTitle = viewEl.dataset.title || 'Sermon';
+                    const filename = currentTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
                     transcriptionService.downloadTranscript(text, filename, format);
                 });
             });
