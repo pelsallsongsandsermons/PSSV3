@@ -2273,3 +2273,104 @@ textarea {
 .setting-textarea::placeholder {
     color: var(--secondary-text);
 }
+
+/* --- Help Modal Styling --- */
+.setting-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-btn.help-btn {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.icon-btn.help-btn:active {
+    background-color: rgba(108, 92, 231, 0.2);
+}
+
+.help-modal-content {
+    max-width: 450px;
+    width: calc(100% - 32px);
+}
+
+.help-modal-content h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.help-modal-content h3 i {
+    color: var(--accent-color);
+}
+
+.help-steps {
+    margin-bottom: 20px;
+}
+
+.help-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 16px;
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.step-content strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-main);
+}
+
+.step-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    line-height: 1.4;
+}
+
+.step-content a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.step-content a:hover {
+    text-decoration: underline;
+}
+
+.help-note {
+    background: rgba(108, 92, 231, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.help-note i {
+    color: var(--accent-color);
+}
