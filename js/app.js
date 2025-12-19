@@ -225,40 +225,22 @@ async function checkVersion() {
         console.log(`Server version detected: ${serverVersion}`);
 
         if (serverVersion && serverVersion !== VERSION) {
-            // Loop prevention: check if we've already tried to update to this version
-            const lastAttempt = sessionStorage.getItem('last_auto_update_attempt');
-            const retryCount = parseInt(sessionStorage.getItem('update_retry_count') || '0');
+            console.log(`VERSION MISMATCH! local(${VERSION}) != server(${serverVersion})`);
 
-            if (lastAttempt === serverVersion && retryCount >= 1) {
-                console.warn(`Already attempted update to ${serverVersion} twice. Skipping reload to avoid loop.`);
-                return;
-            }
-
-            console.log(`VERSION MISMATCH! Scaling up: local(${VERSION}) != server(${serverVersion})`);
-
-            // Trigger Service Worker update check immediately
-            if (window.app.swRegistration) {
-                console.log('Triggering manual SW update check...');
-                window.app.swRegistration.update();
-            }
-
-            sessionStorage.setItem('last_auto_update_attempt', serverVersion);
-            sessionStorage.setItem('update_retry_count', (retryCount + 1).toString());
-            await window.app.forceReload();
+            // Show a non-blocking update prompt instead of auto-reloading
+            showUpdatePrompt(serverVersion);
         } else if (serverVersion === VERSION) {
             console.log('App version is up to date.');
             localStorage.setItem('app_version', VERSION);
-            sessionStorage.removeItem('last_auto_update_attempt');
-            sessionStorage.removeItem('update_retry_count');
         }
     } catch (err) {
         console.warn('Network version check failed:', err);
     }
 }
 
-function showUpdatePrompt() {
+function showUpdatePrompt(serverVersion) {
     // Simple confirm for now, can be a nice UI toast later
-    if (confirm(`New version (${VERSION}) available! Reload to update?`)) {
-        window.location.reload();
+    if (confirm(`New version (${serverVersion}) available! Reload to update?`)) {
+        window.app.forceReload();
     }
 }
