@@ -1665,11 +1665,13 @@ textarea {
 
 .search-action-btn {
     flex: 1;
-    padding: 12px;
+    padding: 14px 20px;
     border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     border: none;
+    transition: opacity 0.2s;
 }
 
 .search-action-btn.primary {
@@ -1999,21 +2001,16 @@ textarea {
 }
 
 .search-action-btn {
-    padding: 14px 24px;
+    padding: 14px 20px;
     border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     cursor: pointer;
     border: none;
     transition: opacity 0.2s;
 }
 
 .search-action-btn.primary {
-    background-color: var(--accent-color);
-    color: #000;
-}
-
-.search-action-btn.secondary {
     background-color: var(--accent-color);
     color: #000;
 }

@@ -47,7 +47,6 @@ export default {
                         <!-- Action Buttons -->
                         <div class="search-actions">
                             <button id="search-dates-btn" class="search-action-btn primary">Search Dates</button>
-                            <button id="clear-all-btn" class="search-action-btn secondary">Clear All</button>
                         </div>
                     </div>
 
