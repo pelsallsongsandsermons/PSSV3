@@ -52,7 +52,12 @@ export default {
                 <!-- Transcription Result Modal -->
                 <div id="transcription-modal" class="modal hidden">
                     <div class="modal-content transcription-modal-content">
-                        <h3>Sermon Transcription</h3>
+                        <div class="modal-header-row">
+                            <h3>Sermon Transcription</h3>
+                            <button id="btn-delete-transcript" class="icon-btn delete-btn" title="Delete Transcription">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                         <div class="transcript-scroll-box">
                             <div id="transcript-text"></div>
                         </div>
@@ -142,9 +147,32 @@ export default {
             const transcriptionModal = document.getElementById('transcription-modal');
             const transcriptText = document.getElementById('transcript-text');
             const closeTranscription = document.getElementById('close-transcription');
+            const deleteBtn = document.getElementById('btn-delete-transcript');
+
+            if (!transcriptionService) transcriptionService = new TranscriptionService();
+
+            // Check for cached transcription
+            let cachedTranscript = null;
+            try {
+                cachedTranscript = await transcriptionService.getTranscript(slug);
+            } catch (e) {
+                console.warn('IndexedDB error:', e);
+            }
+
+            if (cachedTranscript) {
+                transcribeBtn.innerHTML = '<i class="fas fa-file-alt"></i> Show Transcription';
+                transcribeBtn.dataset.cached = 'true';
+            }
 
             if (transcribeBtn) {
                 transcribeBtn.addEventListener('click', async () => {
+                    // If cached, just show it
+                    if (transcribeBtn.dataset.cached === 'true') {
+                        transcriptText.textContent = cachedTranscript;
+                        transcriptionModal.classList.remove('hidden');
+                        return;
+                    }
+
                     const apiKey = localStorage.getItem('deepgram_api_key');
                     const keywords = localStorage.getItem('deepgram_keywords');
 
@@ -161,18 +189,43 @@ export default {
                     transcribeBtn.disabled = true;
                     transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
 
-                    if (!transcriptionService) transcriptionService = new TranscriptionService();
-
                     try {
                         const transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords);
+
+                        // Save to IndexedDB
+                        await transcriptionService.saveTranscript(slug, transcript);
+                        cachedTranscript = transcript;
+
                         transcriptText.textContent = transcript;
                         transcriptionModal.classList.remove('hidden');
+
+                        // Update button for next time
+                        transcribeBtn.innerHTML = '<i class="fas fa-file-alt"></i> Show Transcription';
+                        transcribeBtn.dataset.cached = 'true';
                     } catch (err) {
                         console.error('Transcription error:', err);
                         alert(`Transcription failed: ${err.message}`);
+                        transcribeBtn.innerHTML = '<i class="fas fa-file-alt"></i> Transcribe Sermon';
                     } finally {
                         transcribeBtn.disabled = false;
-                        transcribeBtn.innerHTML = '<i class="fas fa-file-alt"></i> Transcribe Sermon';
+                    }
+                });
+            }
+
+            // Delete Button
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async () => {
+                    if (confirm('Delete this saved transcription?')) {
+                        try {
+                            await transcriptionService.deleteTranscript(slug);
+                            cachedTranscript = null;
+                            transcribeBtn.innerHTML = '<i class="fas fa-file-alt"></i> Transcribe Sermon';
+                            transcribeBtn.dataset.cached = 'false';
+                            transcriptionModal.classList.add('hidden');
+                        } catch (err) {
+                            console.error('Delete error:', err);
+                            alert('Failed to delete transcription.');
+                        }
                     }
                 });
             }
