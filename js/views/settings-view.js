@@ -10,6 +10,7 @@ export default {
         const transcriptionEnabled = localStorage.getItem('transcription_enabled') === 'true';
         const deepgramApiKey = localStorage.getItem('deepgram_api_key') || '';
         const deepgramKeywords = localStorage.getItem('deepgram_keywords') || 'Scripture, ministry, sermon, gospel';
+        const replacementPhrases = localStorage.getItem('replacement_phrases') || 'gonna|going to\nwanna|want to';
 
         return `
             <div class="view settings-view">
@@ -74,6 +75,14 @@ export default {
                                 <span class="setting-description">Comma-separated phrases for context</span>
                             </div>
                             <input type="text" id="deepgram-keywords" class="setting-input" value="${deepgramKeywords}" placeholder="e.g. Scripture, ministry...">
+                        </div>
+
+                        <div class="setting-item setting-item-block">
+                            <div class="setting-info">
+                                <span class="setting-label">Replacement Phrases</span>
+                                <span class="setting-description">One pair per line: transcribed|replacement</span>
+                            </div>
+                            <textarea id="replacement-phrases" class="setting-textarea" rows="4" placeholder="gonna|going to">${replacementPhrases}</textarea>
                         </div>
                     </div>
                 </div>
@@ -163,6 +172,14 @@ export default {
         if (keywordsInput) {
             keywordsInput.addEventListener('change', (e) => {
                 localStorage.setItem('deepgram_keywords', e.target.value.trim());
+            });
+        }
+
+        // Replacement Phrases
+        const replacementInput = document.getElementById('replacement-phrases');
+        if (replacementInput) {
+            replacementInput.addEventListener('change', (e) => {
+                localStorage.setItem('replacement_phrases', e.target.value);
             });
         }
         // Theme Toggle

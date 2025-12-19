@@ -8,6 +8,42 @@ import { TranscriptionService } from '../services/transcription-service.js';
 let podbeanService = null;
 let transcriptionService = null;
 
+// Default replacements (always applied)
+const DEFAULT_REPLACEMENTS = [
+    ['gonna', 'going to'],
+    ['wanna', 'want to']
+];
+
+/**
+ * Apply replacement phrases to transcribed text
+ * @param {string} text - The transcribed text
+ * @returns {string} - Text with replacements applied
+ */
+function applyReplacements(text) {
+    let result = text;
+
+    // Get user-defined replacements from localStorage
+    const userReplacements = localStorage.getItem('replacement_phrases') || '';
+    const pairs = userReplacements.split('\n').filter(line => line.includes('|'));
+
+    // Combine defaults with user replacements
+    const allReplacements = [...DEFAULT_REPLACEMENTS];
+    for (const pair of pairs) {
+        const [from, to] = pair.split('|').map(s => s.trim());
+        if (from && to) {
+            allReplacements.push([from, to]);
+        }
+    }
+
+    // Apply all replacements (case-insensitive)
+    for (const [from, to] of allReplacements) {
+        const regex = new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        result = result.replace(regex, to);
+    }
+
+    return result;
+}
+
 export default {
     render: async (params) => {
         const slug = params.get('slug') || '';
@@ -190,7 +226,10 @@ export default {
                     transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
 
                     try {
-                        const transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords);
+                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords);
+
+                        // Apply replacement phrases
+                        transcript = applyReplacements(transcript);
 
                         // Save to IndexedDB
                         await transcriptionService.saveTranscript(slug, transcript);
