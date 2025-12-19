@@ -2147,8 +2147,9 @@ textarea {
 }
 
 .transcription-modal-content {
-    width: 95%;
+    width: calc(100% - 32px);
     max-width: 800px;
+    margin: 0 auto;
 }
 
 .transcript-scroll-box {
@@ -2170,6 +2171,11 @@ textarea {
     font-size: 0.95rem;
     color: var(--text-main);
     margin: 0;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    display: block;
 }
 
 .download-group {

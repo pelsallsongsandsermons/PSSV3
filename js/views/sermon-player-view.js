@@ -54,7 +54,7 @@ export default {
                     <div class="modal-content transcription-modal-content">
                         <h3>Sermon Transcription</h3>
                         <div class="transcript-scroll-box">
-                            <pre id="transcript-text"></pre>
+                            <div id="transcript-text"></div>
                         </div>
                         <div class="download-group">
                             <button class="download-btn" data-format="txt"><i class="fas fa-file-alt"></i> .txt</button>
