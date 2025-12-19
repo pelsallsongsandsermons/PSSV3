@@ -13,7 +13,7 @@ export class TranscriptionService {
         const params = new URLSearchParams({
             model: 'nova-3',
             smart_format: 'true',
-            keywords: keywords || ''
+            keyterm: keywords || ''
         });
 
         const response = await fetch(`${this.apiEndpoint}?${params.toString()}`, {

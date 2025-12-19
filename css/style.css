@@ -2126,11 +2126,24 @@ textarea {
 .attribution-text p {
     margin-bottom: 8px;
 }
+
 /* --- Transcription Styles --- */
 .transcribe-container {
     display: flex;
     justify-content: center;
-    margin: 10px 0;
+    margin: 20px 0;
+}
+
+#btn-transcribe {
+    width: 250px;
+    height: 60px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    /* Slightly rounded */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
 }
 
 .transcription-modal-content {
