@@ -90,9 +90,14 @@ export default {
                     <div class="modal-content transcription-modal-content">
                         <div class="modal-header-row">
                             <h3>Sermon Transcription</h3>
-                            <button id="btn-delete-transcript" class="icon-btn delete-btn" title="Delete Transcription">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                            <div class="header-action-btns">
+                                <button id="btn-copy-transcript" class="icon-btn" title="Copy to Clipboard">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button id="btn-delete-transcript" class="icon-btn delete-btn" title="Delete Transcription">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="transcript-scroll-box">
                             <div id="transcript-text"></div>
@@ -102,7 +107,6 @@ export default {
                             <button class="download-btn" data-format="docx"><i class="fas fa-file-word"></i> .docx</button>
                             <button class="download-btn" data-format="pdf"><i class="fas fa-file-pdf"></i> .pdf</button>
                         </div>
-                        <button id="btn-copy-transcript" class="btn-primary full-width-btn"><i class="fas fa-copy"></i> Copy to Clipboard</button>
                         <button id="btn-enhance-transcript" class="btn-primary full-width-btn hidden"><i class="fas fa-magic"></i> Enhance Readability</button>
                         <button class="btn-secondary full-width-btn" id="close-transcription">Close</button>
                     </div>
@@ -217,6 +221,13 @@ export default {
                             transcriptText.textContent = cachedTranscript;
                             transcriptText.dataset.enhanced = 'false';
                         }
+
+                        // Hide enhance button if already enhanced
+                        if (enhanceBtn && aiEnhanceEnabled) {
+                            if (transcriptText.dataset.enhanced === 'true') enhanceBtn.classList.add('hidden');
+                            else enhanceBtn.classList.remove('hidden');
+                        }
+
                         transcriptionModal.classList.remove('hidden');
                         return;
                     }
@@ -395,10 +406,8 @@ Here is the transcript to format:`;
                             transcriptText.dataset.markdown = markdownText;
 
                             enhanceBtn.innerHTML = '<i class="fas fa-check"></i> Enhanced!';
-                            setTimeout(() => {
-                                enhanceBtn.innerHTML = '<i class="fas fa-magic"></i> Enhance Readability';
-                                enhanceBtn.disabled = false;
-                            }, 2000);
+                            // 4. Hide enhance button since it's now enhanced
+                            enhanceBtn.classList.add('hidden');
                         } else {
                             throw new Error('No response from AI');
                         }

@@ -2221,6 +2221,7 @@ textarea {
     display: flex;
     flex-direction: column;
 }
+
 /* --- Modal Header Row --- */
 .modal-header-row {
     display: flex;
@@ -2233,15 +2234,37 @@ textarea {
     margin: 0;
 }
 
-.icon-btn.delete-btn {
+.icon-btn {
     background: none;
     border: none;
-    color: #e74c3c;
+    color: var(--secondary-text);
     font-size: 1.2rem;
     cursor: pointer;
     padding: 8px;
     border-radius: 50%;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
+}
+
+.header-action-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn.delete-btn {
+    color: #e74c3c;
+}
+
+.icon-btn.delete-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
 }
 
 .icon-btn.delete-btn:active {
@@ -2376,7 +2399,9 @@ textarea {
 }
 
 /* --- Markdown Rendering Styles --- */
-#transcript-text h1, #transcript-text h2, #transcript-text h3 {
+#transcript-text h1,
+#transcript-text h2,
+#transcript-text h3 {
     color: var(--accent-color);
     margin-top: 1.5rem;
     margin-bottom: 0.8rem;
