@@ -234,9 +234,8 @@ export default {
 
                     const apiKey = localStorage.getItem('deepgram_api_key');
                     const keywords = localStorage.getItem('deepgram_keywords');
-                    const engine = localStorage.getItem('transcription_engine') || 'deepgram';
 
-                    if (engine === 'deepgram' && !apiKey) {
+                    if (!apiKey) {
                         alert('Deepgram API Key is missing. Please add it in Settings.');
                         return;
                     }
@@ -246,22 +245,11 @@ export default {
                         return;
                     }
 
-                    // Check file size for Puter
-                    if (engine === 'puter') {
-                        const size = await transcriptionService.getAudioFileSize(episode.mp3Url);
-                        const MAX_PUTER_SIZE = 25 * 1024 * 1024; // 25MB
-                        if (size && size > MAX_PUTER_SIZE) {
-                            if (!confirm(`This sermon (${~~(size / 1024 / 1024)}MB) exceeds Puter AI's 25MB limit. Transcription will likely fail. Try anyway?`)) {
-                                return;
-                            }
-                        }
-                    }
-
                     transcribeBtn.disabled = true;
                     transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
 
                     try {
-                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords, engine);
+                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords);
 
                         // Apply replacement phrases
                         transcript = applyReplacements(transcript);

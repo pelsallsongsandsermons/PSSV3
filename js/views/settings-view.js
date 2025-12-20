@@ -25,7 +25,6 @@ CRITICAL RULES:
 Here is the transcript to format:`;
 
         const aiEnhancePrompt = localStorage.getItem('ai_enhance_prompt') || defaultPrompt;
-        const transcriptionEngine = localStorage.getItem('transcription_engine') || 'deepgram';
         const deepgramApiKey = localStorage.getItem('deepgram_api_key') || '';
         const deepgramKeywords = localStorage.getItem('deepgram_keywords') || 'Scripture, ministry, sermon, gospel';
         const replacementPhrases = localStorage.getItem('replacement_phrases') || 'gonna|going to\nwanna|want to';
@@ -86,34 +85,18 @@ Here is the transcript to format:`;
                     <div id="transcription-settings" class="${transcriptionEnabled ? '' : 'hidden'}">
                         <div class="setting-item">
                             <div class="setting-info">
-                                <span class="setting-label">Transcription Engine</span>
-                                <span class="setting-description">Choose your preferred speech-to-text service</span>
+                                <span class="setting-label">Deepgram API Key</span>
+                                <span class="setting-description">Enter your Deepgram API Key</span>
                             </div>
-                            <select id="transcription-engine" class="setting-input">
-                                <option value="deepgram" ${transcriptionEngine === 'deepgram' ? 'selected' : ''}>Deepgram</option>
-                                <option value="puter" ${transcriptionEngine === 'puter' ? 'selected' : ''}>Puter AI (Whisper)</option>
-                            </select>
-                            <div id="puter-warning" class="setting-note ${transcriptionEngine === 'puter' ? '' : 'hidden'}" style="color: #e67e22; margin-top: 8px; font-size: 0.85rem;">
-                                <i class="fas fa-exclamation-triangle"></i> Puter AI has a 25MB limit (~30 mins). Use Deepgram for larger files.
-                            </div>
+                            <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
                         </div>
 
-                        <div id="deepgram-settings-group" class="${transcriptionEngine === 'deepgram' ? '' : 'hidden'}">
-                            <div class="setting-item">
-                                <div class="setting-info">
-                                    <span class="setting-label">Deepgram API Key</span>
-                                    <span class="setting-description">Enter your Deepgram API Key</span>
-                                </div>
-                                <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">Keyterm Phrases</span>
+                                <span class="setting-description">Comma-separated phrases for context</span>
                             </div>
-
-                            <div class="setting-item">
-                                <div class="setting-info">
-                                    <span class="setting-label">Keyterm Phrases</span>
-                                    <span class="setting-description">Comma-separated phrases for context</span>
-                                </div>
-                                <input type="text" id="deepgram-keywords" class="setting-input" value="${deepgramKeywords}" placeholder="e.g. Scripture, ministry...">
-                            </div>
+                            <input type="text" id="deepgram-keywords" class="setting-input" value="${deepgramKeywords}" placeholder="e.g. Scripture, ministry...">
                         </div>
 
                         <div class="setting-item setting-item-block">

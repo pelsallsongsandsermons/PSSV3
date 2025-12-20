@@ -6,5 +6,5 @@ export const CONFIG = {
 
     // App Constants
     ANIMATION_DURATION: 300,
-    VERSION: 'V3.0.024',
+    VERSION: 'V3.0.025',
 };
