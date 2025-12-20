@@ -110,6 +110,22 @@ export class TranscriptionService {
         return data.results.channels[0].alternatives[0].transcript;
     }
 
+    async getAudioFileSize(url) {
+        try {
+            // Try HEAD request first for efficiency
+            const response = await fetch(url, { method: 'HEAD' });
+            if (response.ok) {
+                const size = response.headers.get('Content-Length');
+                if (size) return parseInt(size, 10);
+            }
+            // If HEAD fails, we could try GET with range but that's overkill
+            return null;
+        } catch (err) {
+            console.warn('Could not determine file size:', err);
+            return null;
+        }
+    }
+
     async transcribeWithPuter(audioUrl) {
         if (typeof puter === 'undefined') {
             throw new Error('Puter.js is not loaded');
@@ -118,8 +134,8 @@ export class TranscriptionService {
         console.log('Transcribing with Puter AI...', audioUrl);
 
         try {
-            // Using Puter's speech2txt service
-            const result = await puter.ai.speech2txt(audioUrl);
+            // Using Puter's speech2txt service with gpt-4o-mini-transcribe
+            const result = await puter.ai.speech2txt(audioUrl, { model: 'gpt-4o-mini-transcribe' });
 
             if (!result) {
                 throw new Error('Puter AI returned no transcription');

@@ -93,6 +93,9 @@ Here is the transcript to format:`;
                                 <option value="deepgram" ${transcriptionEngine === 'deepgram' ? 'selected' : ''}>Deepgram</option>
                                 <option value="puter" ${transcriptionEngine === 'puter' ? 'selected' : ''}>Puter AI (Whisper)</option>
                             </select>
+                            <div id="puter-warning" class="setting-note ${transcriptionEngine === 'puter' ? '' : 'hidden'}" style="color: #e67e22; margin-top: 8px; font-size: 0.85rem;">
+                                <i class="fas fa-exclamation-triangle"></i> Puter AI has a 25MB limit (~30 mins). Use Deepgram for larger files.
+                            </div>
                         </div>
 
                         <div id="deepgram-settings-group" class="${transcriptionEngine === 'deepgram' ? '' : 'hidden'}">
@@ -288,6 +291,12 @@ Here is the transcript to format:`;
                 if (deepgramGroup) {
                     if (engine === 'deepgram') deepgramGroup.classList.remove('hidden');
                     else deepgramGroup.classList.add('hidden');
+                }
+
+                const puterWarning = document.getElementById('puter-warning');
+                if (puterWarning) {
+                    if (engine === 'puter') puterWarning.classList.remove('hidden');
+                    else puterWarning.classList.add('hidden');
                 }
             });
         }
