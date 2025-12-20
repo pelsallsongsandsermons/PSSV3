@@ -13,7 +13,8 @@ window.app = {
     version: VERSION,
     router: null,
     supabase: null,
-    player: null
+    player: null,
+    updatePromptShown: false // Flag to prevent multiple prompts
 };
 
 // 0. Initialize Default Settings
@@ -66,14 +67,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 3. Register Service Worker
     if ('serviceWorker' in navigator) {
         // Handle controller change (e.g. new SW taking over)
+        // Removed auto-reload here as it can cause reload loops
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('Service Worker controller changed. Reloading page to sync...');
-            window.location.reload();
+            console.log('Service Worker controller changed.');
         });
 
         try {
             // Use relative path for GitHub Pages compatibility
-            const registration = await navigator.serviceWorker.register('./sw.js');
+            const registration = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
 
             // Expose registration for version checking
@@ -87,7 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (navigator.serviceWorker.controller) {
                             // New update available
                             console.log('New content is available; please refresh.');
-                            showUpdatePrompt();
+                            if (!window.app.updatePromptShown) {
+                                showUpdatePrompt();
+                            }
                         } else {
                             // Content is cached for offline use
                             console.log('Content is cached for offline use.');
@@ -228,10 +231,16 @@ async function checkVersion() {
             console.log(`VERSION MISMATCH! local(${VERSION}) != server(${serverVersion})`);
 
             // Show a non-blocking update prompt instead of auto-reloading
-            showUpdatePrompt(serverVersion);
+            if (!window.app.updatePromptShown) {
+                showUpdatePrompt(serverVersion);
+            }
         } else if (serverVersion === VERSION) {
             console.log('App version is up to date.');
             localStorage.setItem('app_version', VERSION);
+            // If they were stuck in a loop, clearing the query param might help
+            if (window.location.search.includes('v=')) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
     } catch (err) {
         console.warn('Network version check failed:', err);
@@ -239,8 +248,14 @@ async function checkVersion() {
 }
 
 function showUpdatePrompt(serverVersion) {
-    // Simple confirm for now, can be a nice UI toast later
-    if (confirm(`New version (${serverVersion}) available! Reload to update?`)) {
+    if (window.app.updatePromptShown) return;
+    window.app.updatePromptShown = true;
+
+    const msg = serverVersion ?
+        `New version (${serverVersion}) available! Reload to update?` :
+        'Application update available! Reload now?';
+
+    if (confirm(msg)) {
         window.app.forceReload();
     }
 }
