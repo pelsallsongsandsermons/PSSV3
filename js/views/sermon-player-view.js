@@ -336,9 +336,11 @@ export default {
                 enhanceBtn.classList.remove('hidden');
 
                 enhanceBtn.addEventListener('click', async () => {
-                    const originalText = transcriptText.textContent || transcriptText.innerText;
+                    // Strip existing paragraph formatting to send as one block
+                    const rawText = transcriptText.textContent || transcriptText.innerText;
+                    const singleBlockText = rawText.replace(/\n\n/g, ' ').replace(/\n/g, ' ').trim();
 
-                    if (!originalText || originalText.trim() === '') {
+                    if (!singleBlockText || singleBlockText === '') {
                         alert('No transcript text to enhance.');
                         return;
                     }
@@ -353,24 +355,25 @@ export default {
                     enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
 
                     try {
-                        const prompt = `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
+                        const userPrompt = localStorage.getItem('ai_enhance_prompt') || `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
 
 CRITICAL RULES:
-1. DO NOT change, remove, summarize, or rewrite ANY of the spoken words.
-2. DO NOT add any words that were not in the original transcript.
-3. DO NOT fix grammar or spelling - leave the text EXACTLY as spoken.
-4. ONLY add:
-   - ## Heading titles where major topic changes occur (make up appropriate short titles)
-   - Blank lines between paragraphs for readability
-5. Keep 100% of the original spoken words in their exact order.
+1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. "the the").
+2. Identify when the speaker is quoting Bible text or a quote from someone else, and format these clearly (e.g. using blockquotes or italics).
+3. DO NOT summarize or rewrite the content.
+4. DO NOT fix general grammar - leave the speaker's natural voice intact.
+5. ONLY add:
+   - ## Heading titles where major topic changes occur.
+   - Blank lines between paragraphs for readability.
+   - Specific formatting for quotes and Bible verses.
 
-Here is the transcript to format:
+Here is the transcript to format:`;
 
-${originalText}`;
+                        const fullPrompt = `${userPrompt}\n\n${singleBlockText}`;
 
-                        const response = await puter.ai.chat(prompt, {
+                        const response = await puter.ai.chat(fullPrompt, {
                             model: 'gpt-4o-mini',
-                            temperature: 0.3 // Lower temperature for more consistent output
+                            temperature: 0.3
                         });
 
                         if (response && response.message && response.message.content) {

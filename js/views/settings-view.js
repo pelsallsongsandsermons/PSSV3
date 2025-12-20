@@ -9,6 +9,21 @@ export default {
         const keepScreenOn = localStorage.getItem('keep_screen_on') !== 'false'; // Default true
         const transcriptionEnabled = localStorage.getItem('transcription_enabled') === 'true';
         const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
+        const defaultPrompt = `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
+
+CRITICAL RULES:
+1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. \"the the\").
+2. Identify when the speaker is quoting Bible text or a quote from someone else, and format these clearly (e.g. using blockquotes or italics).
+3. DO NOT summarize or rewrite the content.
+4. DO NOT fix general grammar - leave the speaker's natural voice intact.
+5. ONLY add:
+   - ## Heading titles where major topic changes occur.
+   - Blank lines between paragraphs for readability.
+   - Specific formatting for quotes and Bible verses.
+
+Here is the transcript to format:`;
+
+        const aiEnhancePrompt = localStorage.getItem('ai_enhance_prompt') || defaultPrompt;
         const deepgramApiKey = localStorage.getItem('deepgram_api_key') || '';
         const deepgramKeywords = localStorage.getItem('deepgram_keywords') || 'Scripture, ministry, sermon, gospel';
         const replacementPhrases = localStorage.getItem('replacement_phrases') || 'gonna|going to\nwanna|want to';
@@ -94,12 +109,21 @@ export default {
                         <div class="setting-item">
                             <div class="setting-info">
                                 <span class="setting-label">AI Text Enhancement</span>
-                                <span class="setting-description">Use Puter AI to improve readability (adds paragraphs, headings, grammar)</span>
+                                <span class="setting-description">Use Puter AI to improve readability (adds paragraphs, headings, quotes)</span>
                             </div>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="toggle-ai-enhance" ${aiEnhanceEnabled ? 'checked' : ''}>
                                 <span class="toggle-slider"></span>
                             </label>
+                        </div>
+
+                        <div id="ai-prompt-container" class="setting-item setting-item-block ${aiEnhanceEnabled ? '' : 'hidden'}">
+                            <div class="setting-info">
+                                <span class="setting-label">AI Enhancement Prompt</span>
+                                <span class="setting-description">Customise how the AI reformats the transcript</span>
+                            </div>
+                            <textarea id="ai-enhance-prompt" class="setting-textarea" rows="10" placeholder="Enter AI instructions...">${aiEnhancePrompt}</textarea>
+                            <button id="reset-ai-prompt" class="btn-secondary" style="margin-top: 10px; font-size: 0.8rem; padding: 5px 10px;">Reset to Default</button>
                         </div>
                     </div>
                 </div>
@@ -248,10 +272,46 @@ export default {
 
         // AI Enhancement Toggle
         const aiEnhanceToggle = document.getElementById('toggle-ai-enhance');
+        const aiPromptContainer = document.getElementById('ai-prompt-container');
+        const aiPromptTextarea = document.getElementById('ai-enhance-prompt');
+        const resetPromptBtn = document.getElementById('reset-ai-prompt');
+
         if (aiEnhanceToggle) {
             aiEnhanceToggle.addEventListener('change', (e) => {
-                localStorage.setItem('ai_enhance_enabled', e.target.checked);
-                console.log('AI Enhancement setting:', e.target.checked);
+                const isEnabled = e.target.checked;
+                localStorage.setItem('ai_enhance_enabled', isEnabled);
+
+                if (aiPromptContainer) {
+                    if (isEnabled) aiPromptContainer.classList.remove('hidden');
+                    else aiPromptContainer.classList.add('hidden');
+                }
+            });
+        }
+
+        if (aiPromptTextarea) {
+            aiPromptTextarea.addEventListener('change', (e) => {
+                localStorage.setItem('ai_enhance_prompt', e.target.value);
+            });
+        }
+
+        if (resetPromptBtn && aiPromptTextarea) {
+            resetPromptBtn.addEventListener('click', () => {
+                const defaultPrompt = `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
+
+CRITICAL RULES:
+1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. "the the").
+2. Identify when the speaker is quoting Bible text or a quote from someone else, and format these clearly (e.g. using blockquotes or italics).
+3. DO NOT summarize or rewrite the content.
+4. DO NOT fix general grammar - leave the speaker's natural voice intact.
+5. ONLY add:
+   - ## Heading titles where major topic changes occur.
+   - Blank lines between paragraphs for readability.
+   - Specific formatting for quotes and Bible verses.
+
+Here is the transcript to format:`;
+                aiPromptTextarea.value = defaultPrompt;
+                localStorage.setItem('ai_enhance_prompt', defaultPrompt);
+                alert('Prompt reset to default.');
             });
         }
         // Theme Toggle

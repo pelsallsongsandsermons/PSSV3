@@ -151,6 +151,13 @@ export class TranscriptionService {
                             h1 { font-size: 18pt; color: #333; margin-top: 20pt; margin-bottom: 10pt; }
                             h2 { font-size: 14pt; color: #555; margin-top: 16pt; margin-bottom: 8pt; }
                             p { margin-bottom: 10pt; }
+                            blockquote { 
+                                border-left: 3pt solid #6c5ce7; 
+                                padding-left: 10pt; 
+                                margin-left: 0; 
+                                font-style: italic; 
+                                color: #666; 
+                            }
                         </style>
                     </head>
                     <body>${bodyContent}</body>
@@ -181,36 +188,53 @@ export class TranscriptionService {
                     let fontSize = 12;
                     let lineText = line;
                     let isBold = false;
+                    let isItalic = false;
+                    let isQuote = false;
 
                     // Detect headings
                     if (line.startsWith('## ')) {
                         fontSize = 14;
                         lineText = line.substring(3);
                         isBold = true;
-                        y += 5; // Extra space before heading
+                        y += 5;
                     } else if (line.startsWith('# ')) {
                         fontSize = 16;
                         lineText = line.substring(2);
                         isBold = true;
                         y += 8;
+                    } else if (line.startsWith('> ')) {
+                        lineText = line.substring(2);
+                        isItalic = true;
+                        isQuote = true;
                     }
 
                     doc.setFontSize(fontSize);
-                    if (isBold) {
-                        doc.setFont('helvetica', 'bold');
-                    } else {
-                        doc.setFont('helvetica', 'normal');
-                    }
+                    if (isBold && isItalic) doc.setFont('helvetica', 'bolditalic');
+                    else if (isBold) doc.setFont('helvetica', 'bold');
+                    else if (isItalic) doc.setFont('helvetica', 'italic');
+                    else doc.setFont('helvetica', 'normal');
 
-                    const wrappedLines = doc.splitTextToSize(lineText, maxWidth);
-                    const lineHeight = fontSize * 0.5;
+                    const currentMargin = isQuote ? margin + 10 : margin;
+                    const currentMaxWidth = isQuote ? maxWidth - 10 : maxWidth;
+                    const wrappedLines = doc.splitTextToSize(lineText, currentMaxWidth);
+                    const lineHeight = fontSize * 0.6;
+
+                    if (isQuote) {
+                        doc.setDrawColor(108, 92, 231); // Accent color
+                        doc.setLineWidth(1);
+                    }
 
                     for (const wrappedLine of wrappedLines) {
                         if (y + lineHeight > pageHeight - margin) {
                             doc.addPage();
                             y = margin;
                         }
-                        doc.text(wrappedLine, margin, y);
+
+                        if (isQuote) {
+                            doc.line(margin + 2, y - (lineHeight * 0.8), margin + 2, y + (lineHeight * 0.2));
+                        }
+
+                        doc.text(wrappedLine, currentMargin, y);
                         y += lineHeight;
                     }
 
