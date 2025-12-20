@@ -2,7 +2,7 @@
  * Service Worker
  * Handles caching and offline functionality
  */
-const CACHE_NAME = 'v3.0.021';
+const CACHE_NAME = 'v3.0.022';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -46,6 +46,8 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
+    // Only cache GET requests
+    if (event.request.method !== 'GET') return;
     // Navigation requests -> network first, fall back to cache
     if (event.request.mode === 'navigate') {
         event.respondWith(

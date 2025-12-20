@@ -128,7 +128,9 @@ export class TranscriptionService {
             return result;
         } catch (err) {
             console.error('Puter Transcription failed:', err);
-            throw new Error(`Puter AI Error: ${err.message || 'Unknown error'}`);
+            // Better error detail from Puter response
+            const errMsg = (err && typeof err === 'object') ? JSON.stringify(err) : (err || 'Unknown error');
+            throw new Error(`Puter AI Error: ${errMsg}`);
         }
     }
 
