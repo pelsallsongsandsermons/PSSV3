@@ -234,8 +234,9 @@ export default {
 
                     const apiKey = localStorage.getItem('deepgram_api_key');
                     const keywords = localStorage.getItem('deepgram_keywords');
+                    const engine = localStorage.getItem('transcription_engine') || 'deepgram';
 
-                    if (!apiKey) {
+                    if (engine === 'deepgram' && !apiKey) {
                         alert('Deepgram API Key is missing. Please add it in Settings.');
                         return;
                     }
@@ -249,7 +250,7 @@ export default {
                     transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
 
                     try {
-                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords);
+                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords, engine);
 
                         // Apply replacement phrases
                         transcript = applyReplacements(transcript);
@@ -371,9 +372,10 @@ export default {
 CRITICAL RULES:
 1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. "the the").
 2. Identify when the speaker is quoting Bible text or a quote from someone else, and format these clearly (e.g. using blockquotes or italics).
-3. DO NOT summarize or rewrite the content.
-4. DO NOT fix general grammar - leave the speaker's natural voice intact.
-5. ONLY add:
+3. Change obvious number words to numerical digits (e.g. "forty-two" to "42", "one hundred" to "100").
+4. DO NOT summarize or rewrite the content.
+5. DO NOT fix general grammar - leave the speaker's natural voice intact.
+6. ONLY add:
    - ## Heading titles where major topic changes occur.
    - Blank lines between paragraphs for readability.
    - Specific formatting for quotes and Bible verses.

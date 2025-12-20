@@ -14,9 +14,10 @@ export default {
 CRITICAL RULES:
 1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. \"the the\").
 2. Identify when the speaker is quoting Bible text or a quote from someone else, and format these clearly (e.g. using blockquotes or italics).
-3. DO NOT summarize or rewrite the content.
-4. DO NOT fix general grammar - leave the speaker's natural voice intact.
-5. ONLY add:
+3. Change obvious number words to numerical digits (e.g. "forty-two" to "42", "one hundred" to "100").
+4. DO NOT summarize or rewrite the content.
+5. DO NOT fix general grammar - leave the speaker's natural voice intact.
+6. ONLY add:
    - ## Heading titles where major topic changes occur.
    - Blank lines between paragraphs for readability.
    - Specific formatting for quotes and Bible verses.
@@ -24,6 +25,7 @@ CRITICAL RULES:
 Here is the transcript to format:`;
 
         const aiEnhancePrompt = localStorage.getItem('ai_enhance_prompt') || defaultPrompt;
+        const transcriptionEngine = localStorage.getItem('transcription_engine') || 'deepgram';
         const deepgramApiKey = localStorage.getItem('deepgram_api_key') || '';
         const deepgramKeywords = localStorage.getItem('deepgram_keywords') || 'Scripture, ministry, sermon, gospel';
         const replacementPhrases = localStorage.getItem('replacement_phrases') || 'gonna|going to\nwanna|want to';
@@ -84,18 +86,31 @@ Here is the transcript to format:`;
                     <div id="transcription-settings" class="${transcriptionEnabled ? '' : 'hidden'}">
                         <div class="setting-item">
                             <div class="setting-info">
-                                <span class="setting-label">Deepgram API Key</span>
-                                <span class="setting-description">Enter your Deepgram API Key</span>
+                                <span class="setting-label">Transcription Engine</span>
+                                <span class="setting-description">Choose your preferred speech-to-text service</span>
                             </div>
-                            <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
+                            <select id="transcription-engine" class="setting-input">
+                                <option value="deepgram" ${transcriptionEngine === 'deepgram' ? 'selected' : ''}>Deepgram</option>
+                                <option value="puter" ${transcriptionEngine === 'puter' ? 'selected' : ''}>Puter AI (Whisper)</option>
+                            </select>
                         </div>
 
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label">Keyterm Phrases</span>
-                                <span class="setting-description">Comma-separated phrases for context</span>
+                        <div id="deepgram-settings-group" class="${transcriptionEngine === 'deepgram' ? '' : 'hidden'}">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Deepgram API Key</span>
+                                    <span class="setting-description">Enter your Deepgram API Key</span>
+                                </div>
+                                <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
                             </div>
-                            <input type="text" id="deepgram-keywords" class="setting-input" value="${deepgramKeywords}" placeholder="e.g. Scripture, ministry...">
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Keyterm Phrases</span>
+                                    <span class="setting-description">Comma-separated phrases for context</span>
+                                </div>
+                                <input type="text" id="deepgram-keywords" class="setting-input" value="${deepgramKeywords}" placeholder="e.g. Scripture, ministry...">
+                            </div>
                         </div>
 
                         <div class="setting-item setting-item-block">
@@ -262,6 +277,21 @@ Here is the transcript to format:`;
             });
         }
 
+        // Transcription Engine
+        const engineSelect = document.getElementById('transcription-engine');
+        const deepgramGroup = document.getElementById('deepgram-settings-group');
+        if (engineSelect) {
+            engineSelect.addEventListener('change', (e) => {
+                const engine = e.target.value;
+                localStorage.setItem('transcription_engine', engine);
+
+                if (deepgramGroup) {
+                    if (engine === 'deepgram') deepgramGroup.classList.remove('hidden');
+                    else deepgramGroup.classList.add('hidden');
+                }
+            });
+        }
+
         // Replacement Phrases
         const replacementInput = document.getElementById('replacement-phrases');
         if (replacementInput) {
@@ -301,9 +331,10 @@ Here is the transcript to format:`;
 CRITICAL RULES:
 1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. "the the").
 2. Identify when the speaker is quoting Bible text or a quote from someone else, and format these clearly (e.g. using blockquotes or italics).
-3. DO NOT summarize or rewrite the content.
-4. DO NOT fix general grammar - leave the speaker's natural voice intact.
-5. ONLY add:
+3. Change obvious number words to numerical digits (e.g. "forty-two" to "42", "one hundred" to "100").
+4. DO NOT summarize or rewrite the content.
+5. DO NOT fix general grammar - leave the speaker's natural voice intact.
+6. ONLY add:
    - ## Heading titles where major topic changes occur.
    - Blank lines between paragraphs for readability.
    - Specific formatting for quotes and Bible verses.

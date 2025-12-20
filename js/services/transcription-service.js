@@ -67,7 +67,11 @@ export class TranscriptionService {
         });
     }
 
-    async transcribeAudio(audioUrl, apiKey, keywords) {
+    async transcribeAudio(audioUrl, apiKey, keywords, engine = 'deepgram') {
+        if (engine === 'puter') {
+            return this.transcribeWithPuter(audioUrl);
+        }
+
         if (!apiKey) throw new Error('API Key is missing');
 
         const params = new URLSearchParams({
@@ -104,6 +108,28 @@ export class TranscriptionService {
 
         // Fallback to simple transcript if paragraphs not available
         return data.results.channels[0].alternatives[0].transcript;
+    }
+
+    async transcribeWithPuter(audioUrl) {
+        if (typeof puter === 'undefined') {
+            throw new Error('Puter.js is not loaded');
+        }
+
+        console.log('Transcribing with Puter AI...', audioUrl);
+
+        try {
+            // Using Puter's speech2txt service
+            const result = await puter.ai.speech2txt(audioUrl);
+
+            if (!result) {
+                throw new Error('Puter AI returned no transcription');
+            }
+
+            return result;
+        } catch (err) {
+            console.error('Puter Transcription failed:', err);
+            throw new Error(`Puter AI Error: ${err.message || 'Unknown error'}`);
+        }
     }
 
     downloadTranscript(text, filename, format, isEnhanced = false) {
