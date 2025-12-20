@@ -1,7 +1,5 @@
-/**
- * Settings View
- * User preferences and app settings
- */
+import { DEEPGRAM_HELP } from '../data/help-text.js';
+
 export default {
     render: async () => {
         // Load current settings from localStorage
@@ -164,46 +162,8 @@ Here is the transcript to format:`;
                 <!-- Deepgram Help Modal -->
                 <div id="deepgram-help-modal" class="modal hidden">
                     <div class="modal-content help-modal-content">
-                        <h3><i class="fas fa-key"></i> Getting a Deepgram API Key</h3>
-                        <div class="help-steps">
-                            <div class="help-step">
-                                <div class="step-number">1</div>
-                                <div class="step-content">
-                                    <strong>Sign Up</strong>
-                                    <p>Visit <a href="https://console.deepgram.com/signup" target="_blank">console.deepgram.com/signup</a> and create a free account.</p>
-                                </div>
-                            </div>
-                            <div class="help-step">
-                                <div class="step-number">2</div>
-                                <div class="step-content">
-                                    <strong>Verify Email</strong>
-                                    <p>Check your inbox for a verification email from Deepgram and click the link.</p>
-                                </div>
-                            </div>
-                            <div class="help-step">
-                                <div class="step-number">3</div>
-                                <div class="step-content">
-                                    <strong>Log In</strong>
-                                    <p>Return to <a href="https://console.deepgram.com" target="_blank">console.deepgram.com</a> and log in.</p>
-                                </div>
-                            </div>
-                            <div class="help-step">
-                                <div class="step-number">4</div>
-                                <div class="step-content">
-                                    <strong>Create API Key</strong>
-                                    <p>Go to <strong>Settings → API Keys</strong>, then click <strong>"Create a New API Key"</strong>.</p>
-                                </div>
-                            </div>
-                            <div class="help-step">
-                                <div class="step-number">5</div>
-                                <div class="step-content">
-                                    <strong>Copy & Paste</strong>
-                                    <p>Copy your new key and paste it into the API Key field in this app. <em>Save it somewhere safe!</em></p>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="help-note"><i class="fas fa-info-circle"></i> Deepgram offers free credits to get started.</p>
-                        <button class="btn-primary full-width-btn" id="close-deepgram-help">Got It</button>
+                        ${DEEPGRAM_HELP}
+                        <button class="btn-primary full-width-btn" style="margin-top: 10px;" id="close-deepgram-help">Got It</button>
                     </div>
                 </div>
             </div>

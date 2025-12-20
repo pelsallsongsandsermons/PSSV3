@@ -2320,8 +2320,14 @@ textarea {
 }
 
 .help-modal-content {
-    max-width: 450px;
+    max-width: 480px;
     width: calc(100% - 32px);
+    max-height: 85vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    border-radius: 16px;
 }
 
 .help-modal-content h3 {
@@ -2342,34 +2348,34 @@ textarea {
 .help-step {
     display: flex;
     align-items: flex-start;
-    gap: 15px;
-    margin-bottom: 16px;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
-.step-number {
-    flex-shrink: 0;
-    width: 28px;
-    height: 28px;
-    background: var(--accent-color);
-    color: white;
+.step-icon {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(108, 92, 231, 0.1);
+    color: var(--accent-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 0.9rem;
+    flex-shrink: 0;
+    font-size: 1rem;
 }
 
 .step-content strong {
     display: block;
     margin-bottom: 4px;
     color: var(--text-main);
+    font-size: 1rem;
 }
 
 .step-content p {
-    margin: 0;
     font-size: 0.9rem;
     color: var(--secondary-text);
+    margin: 0;
     line-height: 1.4;
 }
 
@@ -2383,12 +2389,13 @@ textarea {
 }
 
 .help-note {
-    background: rgba(108, 92, 231, 0.1);
+    background-color: rgba(108, 92, 231, 0.05);
     padding: 12px;
     border-radius: 8px;
+    border-left: 4px solid var(--accent-color);
     font-size: 0.85rem;
     color: var(--text-main);
-    margin-bottom: 20px;
+    margin: 15px 0;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -2396,6 +2403,15 @@ textarea {
 
 .help-note i {
     color: var(--accent-color);
+}
+
+.help-details {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--secondary-text);
+    opacity: 0.8;
+    margin-bottom: 10px;
+    font-style: italic;
 }
 
 /* --- Markdown Rendering Styles --- */

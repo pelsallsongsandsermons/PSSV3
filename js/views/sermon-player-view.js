@@ -249,7 +249,8 @@ export default {
                     transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
 
                     try {
-                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords);
+                        const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
+                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords, !aiEnhanceEnabled);
 
                         // Apply replacement phrases
                         transcript = applyReplacements(transcript);

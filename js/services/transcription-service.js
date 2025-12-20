@@ -67,13 +67,13 @@ export class TranscriptionService {
         });
     }
 
-    async transcribeAudio(audioUrl, apiKey, keywords) {
+    async transcribeAudio(audioUrl, apiKey, keywords, includeParagraphs = true) {
         if (!apiKey) throw new Error('API Key is missing');
 
         const params = new URLSearchParams({
             model: 'nova-3',
             smart_format: 'true',
-            paragraphs: 'true',
+            paragraphs: includeParagraphs ? 'true' : 'false',
             keyterm: keywords || ''
         });
 
