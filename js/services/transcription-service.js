@@ -73,6 +73,7 @@ export class TranscriptionService {
         const params = new URLSearchParams({
             model: 'nova-3',
             smart_format: 'true',
+            paragraphs: 'true',
             keyterm: keywords || ''
         });
 
@@ -91,6 +92,17 @@ export class TranscriptionService {
         }
 
         const data = await response.json();
+
+        // Check if paragraphs are available in the response
+        if (data.results?.channels?.[0]?.alternatives?.[0]?.paragraphs?.paragraphs) {
+            // Extract text from paragraph structure with line breaks between paragraphs
+            const paragraphs = data.results.channels[0].alternatives[0].paragraphs.paragraphs;
+            return paragraphs.map(p =>
+                p.sentences.map(s => s.text).join(' ')
+            ).join('\n\n');
+        }
+
+        // Fallback to simple transcript if paragraphs not available
         return data.results.channels[0].alternatives[0].transcript;
     }
 
