@@ -8,6 +8,7 @@ export default {
         const useCustomPlayer = localStorage.getItem('use_custom_player') !== 'false'; // Default true
         const keepScreenOn = localStorage.getItem('keep_screen_on') !== 'false'; // Default true
         const transcriptionEnabled = localStorage.getItem('transcription_enabled') === 'true';
+        const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
         const deepgramApiKey = localStorage.getItem('deepgram_api_key') || '';
         const deepgramKeywords = localStorage.getItem('deepgram_keywords') || 'Scripture, ministry, sermon, gospel';
         const replacementPhrases = localStorage.getItem('replacement_phrases') || 'gonna|going to\nwanna|want to';
@@ -88,6 +89,17 @@ export default {
                                 <span class="setting-description">One pair per line: transcribed|replacement</span>
                             </div>
                             <textarea id="replacement-phrases" class="setting-textarea" rows="4" placeholder="gonna|going to">${replacementPhrases}</textarea>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">AI Text Enhancement</span>
+                                <span class="setting-description">Use Puter AI to improve readability (adds paragraphs, headings, grammar)</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-ai-enhance" ${aiEnhanceEnabled ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -231,6 +243,15 @@ export default {
         if (replacementInput) {
             replacementInput.addEventListener('change', (e) => {
                 localStorage.setItem('replacement_phrases', e.target.value);
+            });
+        }
+
+        // AI Enhancement Toggle
+        const aiEnhanceToggle = document.getElementById('toggle-ai-enhance');
+        if (aiEnhanceToggle) {
+            aiEnhanceToggle.addEventListener('change', (e) => {
+                localStorage.setItem('ai_enhance_enabled', e.target.checked);
+                console.log('AI Enhancement setting:', e.target.checked);
             });
         }
         // Theme Toggle

@@ -103,6 +103,7 @@ export default {
                             <button class="download-btn" data-format="pdf"><i class="fas fa-file-pdf"></i> .pdf</button>
                         </div>
                         <button id="btn-copy-transcript" class="btn-primary full-width-btn"><i class="fas fa-copy"></i> Copy to Clipboard</button>
+                        <button id="btn-enhance-transcript" class="btn-primary full-width-btn hidden"><i class="fas fa-magic"></i> Enhance Readability</button>
                         <button class="btn-secondary full-width-btn" id="close-transcription">Close</button>
                     </div>
                 </div>
@@ -304,6 +305,59 @@ export default {
                     } catch (err) {
                         console.error('Copy failed:', err);
                         alert('Failed to copy to clipboard.');
+                    }
+                });
+            }
+
+            // AI Enhancement Button (Puter.js)
+            const enhanceBtn = document.getElementById('btn-enhance-transcript');
+            const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
+
+            if (enhanceBtn && aiEnhanceEnabled) {
+                enhanceBtn.classList.remove('hidden');
+
+                enhanceBtn.addEventListener('click', async () => {
+                    const originalText = transcriptText.textContent;
+
+                    if (!originalText || originalText.trim() === '') {
+                        alert('No transcript text to enhance.');
+                        return;
+                    }
+
+                    // Check if Puter is available
+                    if (typeof puter === 'undefined') {
+                        alert('Puter AI is not available. Please reload the app.');
+                        return;
+                    }
+
+                    enhanceBtn.disabled = true;
+                    enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
+
+                    try {
+                        const prompt = `Please improve the readability of this sermon transcript. Add appropriate paragraph breaks, section headings where topics change, and fix any grammatical errors while preserving the speaker's voice. Format the output as plain text (not markdown). Here is the transcript:\n\n${originalText}`;
+
+                        const response = await puter.ai.chat(prompt, { model: 'gpt-4o-mini' });
+
+                        if (response && response.message && response.message.content) {
+                            transcriptText.textContent = response.message.content;
+
+                            // Update cached transcript with enhanced version
+                            await transcriptionService.saveTranscript(slug, response.message.content);
+                            cachedTranscript = response.message.content;
+
+                            enhanceBtn.innerHTML = '<i class="fas fa-check"></i> Enhanced!';
+                            setTimeout(() => {
+                                enhanceBtn.innerHTML = '<i class="fas fa-magic"></i> Enhance Readability';
+                                enhanceBtn.disabled = false;
+                            }, 2000);
+                        } else {
+                            throw new Error('No response from AI');
+                        }
+                    } catch (err) {
+                        console.error('AI Enhancement failed:', err);
+                        alert('Enhancement failed. Please try again or sign in to Puter.');
+                        enhanceBtn.innerHTML = '<i class="fas fa-magic"></i> Enhance Readability';
+                        enhanceBtn.disabled = false;
                     }
                 });
             }
