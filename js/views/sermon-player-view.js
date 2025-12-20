@@ -206,7 +206,17 @@ export default {
                 transcribeBtn.addEventListener('click', async () => {
                     // If cached, just show it
                     if (transcribeBtn.dataset.cached === 'true') {
-                        transcriptText.textContent = cachedTranscript;
+                        // Check if cached content contains markdown headings
+                        const hasMarkdown = cachedTranscript.includes('## ') || cachedTranscript.includes('# ');
+
+                        if (hasMarkdown && typeof marked !== 'undefined') {
+                            transcriptText.innerHTML = marked.parse(cachedTranscript);
+                            transcriptText.dataset.enhanced = 'true';
+                            transcriptText.dataset.markdown = cachedTranscript;
+                        } else {
+                            transcriptText.textContent = cachedTranscript;
+                            transcriptText.dataset.enhanced = 'false';
+                        }
                         transcriptionModal.classList.remove('hidden');
                         return;
                     }
@@ -281,10 +291,19 @@ export default {
             document.querySelectorAll('.download-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const format = btn.dataset.format;
-                    const text = transcriptText.textContent;
+                    const isEnhanced = transcriptText.dataset.enhanced === 'true';
+                    const markdown = transcriptText.dataset.markdown || '';
+                    const plainText = transcriptText.textContent || transcriptText.innerText;
                     const currentTitle = viewEl.dataset.title || 'Sermon';
                     const filename = currentTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                    transcriptionService.downloadTranscript(text, filename, format);
+
+                    // Pass markdown for enhanced content, otherwise plain text
+                    transcriptionService.downloadTranscript(
+                        isEnhanced ? markdown : plainText,
+                        filename,
+                        format,
+                        isEnhanced
+                    );
                 });
             });
 
@@ -317,7 +336,7 @@ export default {
                 enhanceBtn.classList.remove('hidden');
 
                 enhanceBtn.addEventListener('click', async () => {
-                    const originalText = transcriptText.textContent;
+                    const originalText = transcriptText.textContent || transcriptText.innerText;
 
                     if (!originalText || originalText.trim() === '') {
                         alert('No transcript text to enhance.');
@@ -334,16 +353,43 @@ export default {
                     enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
 
                     try {
-                        const prompt = `Please improve the readability of this sermon transcript. Add appropriate paragraph breaks, section headings where topics change, and fix any grammatical errors while preserving the speaker's voice. Format the output as plain text (not markdown). Here is the transcript:\n\n${originalText}`;
+                        const prompt = `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
 
-                        const response = await puter.ai.chat(prompt, { model: 'gpt-4o-mini' });
+CRITICAL RULES:
+1. DO NOT change, remove, summarize, or rewrite ANY of the spoken words.
+2. DO NOT add any words that were not in the original transcript.
+3. DO NOT fix grammar or spelling - leave the text EXACTLY as spoken.
+4. ONLY add:
+   - ## Heading titles where major topic changes occur (make up appropriate short titles)
+   - Blank lines between paragraphs for readability
+5. Keep 100% of the original spoken words in their exact order.
+
+Here is the transcript to format:
+
+${originalText}`;
+
+                        const response = await puter.ai.chat(prompt, {
+                            model: 'gpt-4o-mini',
+                            temperature: 0.3 // Lower temperature for more consistent output
+                        });
 
                         if (response && response.message && response.message.content) {
-                            transcriptText.textContent = response.message.content;
+                            const markdownText = response.message.content;
 
-                            // Update cached transcript with enhanced version
-                            await transcriptionService.saveTranscript(slug, response.message.content);
-                            cachedTranscript = response.message.content;
+                            // Store the markdown version
+                            await transcriptionService.saveTranscript(slug, markdownText);
+                            cachedTranscript = markdownText;
+
+                            // Render markdown as HTML for display
+                            if (typeof marked !== 'undefined') {
+                                transcriptText.innerHTML = marked.parse(markdownText);
+                            } else {
+                                transcriptText.textContent = markdownText;
+                            }
+
+                            // Mark as enhanced for download handling
+                            transcriptText.dataset.enhanced = 'true';
+                            transcriptText.dataset.markdown = markdownText;
 
                             enhanceBtn.innerHTML = '<i class="fas fa-check"></i> Enhanced!';
                             setTimeout(() => {

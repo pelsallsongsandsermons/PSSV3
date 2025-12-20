@@ -2374,3 +2374,30 @@ textarea {
 .help-note i {
     color: var(--accent-color);
 }
+
+/* --- Markdown Rendering Styles --- */
+#transcript-text h1, #transcript-text h2, #transcript-text h3 {
+    color: var(--accent-color);
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+}
+
+#transcript-text h2 {
+    font-size: 1.3rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+#transcript-text p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+#transcript-text strong {
+    color: var(--text-main);
+}
+
+#transcript-text em {
+    font-style: italic;
+}

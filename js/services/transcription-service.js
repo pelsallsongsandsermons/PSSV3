@@ -106,33 +106,61 @@ export class TranscriptionService {
         return data.results.channels[0].alternatives[0].transcript;
     }
 
-    downloadTranscript(text, filename, format) {
+    downloadTranscript(text, filename, format, isEnhanced = false) {
         let blob;
         let finalFilename = filename;
 
+        // Convert markdown headings to plain text with indicators for txt format
+        const markdownToPlainText = (md) => {
+            return md
+                .replace(/^## (.+)$/gm, '\n--- $1 ---\n')  // H2 to dashed title
+                .replace(/^# (.+)$/gm, '\n=== $1 ===\n')   // H1 to double dashed
+                .replace(/\*\*(.+?)\*\*/g, '$1')            // Bold
+                .replace(/\*(.+?)\*/g, '$1');               // Italic
+        };
+
+        // Convert markdown to HTML
+        const markdownToHtml = (md) => {
+            if (typeof marked !== 'undefined') {
+                return marked.parse(md);
+            }
+            // Fallback simple conversion
+            return md
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+        };
+
         switch (format) {
             case 'txt':
-                blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const txtContent = isEnhanced ? markdownToPlainText(text) : text;
+                blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
                 finalFilename += '.txt';
                 break;
 
             case 'docx':
-                // Create an HTML-based Word document (.doc format, opens in Word)
+                // Create an HTML-based Word document with formatting
+                const bodyContent = isEnhanced ? markdownToHtml(text) : text.replace(/\n/g, '<br>');
                 const htmlContent = `
                     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                     <head>
                         <meta charset='utf-8'>
-                        <style>body { font-family: Calibri, sans-serif; font-size: 12pt; line-height: 1.5; }</style>
+                        <style>
+                            body { font-family: Calibri, sans-serif; font-size: 12pt; line-height: 1.6; }
+                            h1 { font-size: 18pt; color: #333; margin-top: 20pt; margin-bottom: 10pt; }
+                            h2 { font-size: 14pt; color: #555; margin-top: 16pt; margin-bottom: 8pt; }
+                            p { margin-bottom: 10pt; }
+                        </style>
                     </head>
-                    <body>${text.replace(/\n/g, '<br>')}</body>
+                    <body>${bodyContent}</body>
                     </html>
                 `;
                 blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
-                finalFilename += '.doc'; // Using .doc for clarity (HTML-based Word format)
+                finalFilename += '.doc';
                 break;
 
             case 'pdf':
-                // Use jsPDF library for proper PDF generation
                 if (typeof window.jspdf === 'undefined') {
                     alert('PDF library not loaded. Please try again or use .txt format.');
                     return;
@@ -140,28 +168,60 @@ export class TranscriptionService {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                // Split text into lines that fit the page width
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const margin = 15;
                 const maxWidth = pageWidth - (margin * 2);
-                const lines = doc.splitTextToSize(text, maxWidth);
-
-                // Add text with automatic page breaks
                 let y = margin;
-                const lineHeight = 7;
                 const pageHeight = doc.internal.pageSize.getHeight();
 
-                for (let i = 0; i < lines.length; i++) {
-                    if (y + lineHeight > pageHeight - margin) {
-                        doc.addPage();
-                        y = margin;
+                // Parse markdown for PDF
+                const pdfLines = text.split('\n');
+
+                for (const line of pdfLines) {
+                    let fontSize = 12;
+                    let lineText = line;
+                    let isBold = false;
+
+                    // Detect headings
+                    if (line.startsWith('## ')) {
+                        fontSize = 14;
+                        lineText = line.substring(3);
+                        isBold = true;
+                        y += 5; // Extra space before heading
+                    } else if (line.startsWith('# ')) {
+                        fontSize = 16;
+                        lineText = line.substring(2);
+                        isBold = true;
+                        y += 8;
                     }
-                    doc.text(lines[i], margin, y);
-                    y += lineHeight;
+
+                    doc.setFontSize(fontSize);
+                    if (isBold) {
+                        doc.setFont('helvetica', 'bold');
+                    } else {
+                        doc.setFont('helvetica', 'normal');
+                    }
+
+                    const wrappedLines = doc.splitTextToSize(lineText, maxWidth);
+                    const lineHeight = fontSize * 0.5;
+
+                    for (const wrappedLine of wrappedLines) {
+                        if (y + lineHeight > pageHeight - margin) {
+                            doc.addPage();
+                            y = margin;
+                        }
+                        doc.text(wrappedLine, margin, y);
+                        y += lineHeight;
+                    }
+
+                    // Add space after paragraphs
+                    if (line === '') {
+                        y += 3;
+                    }
                 }
 
                 doc.save(filename + '.pdf');
-                return; // jsPDF handles download directly
+                return;
 
             default:
                 return;
