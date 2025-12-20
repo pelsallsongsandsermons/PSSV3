@@ -123,6 +123,23 @@ Here is the transcript to format:`;
                             </div>
                             <textarea id="ai-enhance-prompt" class="setting-textarea" rows="10" placeholder="Enter AI instructions...">${aiEnhancePrompt}</textarea>
                             <button id="reset-ai-prompt" class="btn-secondary" style="margin-top: 10px; font-size: 0.8rem; padding: 5px 10px;">Reset to Default</button>
+                            
+                            <div class="divider-line" style="margin: 20px 0;"></div>
+
+                            <div class="setting-info">
+                                <span class="setting-label">AI Model</span>
+                                <span class="setting-description">Select the model used for enhancement</span>
+                            </div>
+                            <select id="ai-enhance-model" class="setting-input" style="margin-bottom: 10px;">
+                                <option value="gpt-4o-mini">GPT-4o Mini (Default - Fast)</option>
+                                <option value="gpt-4o">GPT-4o (Best Overall)</option>
+                                <option value="claude-3-5-sonnet">Claude 3.5 Sonnet (Best for Writing)</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Large Context)</option>
+                                <option value="llama-3-70b">Llama 3 70B (Open Source)</option>
+                                <option value="mistral-large">Mistral Large</option>
+                                <option value="custom">Custom Model...</option>
+                            </select>
+                            <input type="text" id="ai-custom-model" class="setting-input hidden" placeholder="Enter custom model string (e.g. gpt-3.5-turbo)" style="margin-top: 5px;">
                         </div>
                     </div>
                 </div>
@@ -312,6 +329,42 @@ Here is the transcript to format:`;
                 } else {
                     document.body.classList.remove('dark-mode');
                 }
+            });
+        }
+
+        // AI Model Selection Logic
+        const aiModelSelect = document.getElementById('ai-enhance-model');
+        const aiCustomModelInput = document.getElementById('ai-custom-model');
+
+        if (aiModelSelect && aiCustomModelInput) {
+            // Load saved settings
+            const savedModel = localStorage.getItem('ai_enhance_model') || 'gpt-4o-mini';
+            const savedCustomModelString = localStorage.getItem('ai_custom_model_string') || '';
+
+            // Set initial state
+            aiModelSelect.value = savedModel;
+            aiCustomModelInput.value = savedCustomModelString;
+
+            if (savedModel === 'custom') {
+                aiCustomModelInput.classList.remove('hidden');
+            }
+
+            // Model Selection Change Listener
+            aiModelSelect.addEventListener('change', (e) => {
+                const selectedModel = e.target.value;
+                localStorage.setItem('ai_enhance_model', selectedModel);
+
+                if (selectedModel === 'custom') {
+                    aiCustomModelInput.classList.remove('hidden');
+                    aiCustomModelInput.focus();
+                } else {
+                    aiCustomModelInput.classList.add('hidden');
+                }
+            });
+
+            // Custom Model String Input Listener
+            aiCustomModelInput.addEventListener('change', (e) => {
+                localStorage.setItem('ai_custom_model_string', e.target.value.trim());
             });
         }
 

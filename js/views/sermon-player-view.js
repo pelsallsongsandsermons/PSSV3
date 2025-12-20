@@ -384,8 +384,16 @@ Here is the transcript to format:`;
 
                         const fullPrompt = `${userPrompt}\n\n${singleBlockText}`;
 
+                        // Determine IModel to use
+                        let selectedModel = localStorage.getItem('ai_enhance_model') || 'gpt-4o-mini';
+                        if (selectedModel === 'custom') {
+                            selectedModel = localStorage.getItem('ai_custom_model_string') || 'gpt-4o-mini';
+                        }
+
+                        console.log(`Using AI Model: ${selectedModel}`);
+
                         const response = await puter.ai.chat(fullPrompt, {
-                            model: 'gpt-4o-mini',
+                            model: selectedModel,
                             temperature: 0.3
                         });
 
