@@ -2178,8 +2178,15 @@ textarea {
     display: block;
 }
 
-body:not(.dark-mode) #transcript-text {
-    color: #000000;
+body:not(.dark-mode) #transcript-text,
+body:not(.dark-mode) #transcript-text p,
+body:not(.dark-mode) #transcript-text h1,
+body:not(.dark-mode) #transcript-text h2,
+body:not(.dark-mode) #transcript-text h3,
+body:not(.dark-mode) #transcript-text blockquote,
+body:not(.dark-mode) #transcript-text strong,
+body:not(.dark-mode) #transcript-text em {
+    color: #000000 !important;
 }
 
 .download-group {
