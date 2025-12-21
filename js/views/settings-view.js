@@ -273,12 +273,6 @@ Here is the transcript to format:`;
                     if (engine === 'deepgram') deepgramGroup.classList.remove('hidden');
                     else deepgramGroup.classList.add('hidden');
                 }
-
-                const puterWarning = document.getElementById('puter-warning');
-                if (puterWarning) {
-                    if (engine === 'puter') puterWarning.classList.remove('hidden');
-                    else puterWarning.classList.add('hidden');
-                }
             });
         }
 

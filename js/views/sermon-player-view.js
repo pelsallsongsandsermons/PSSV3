@@ -240,7 +240,16 @@ export default {
                         return;
                     }
 
-                    if (!episode || !episode.mp3Url) {
+                    let audioUrl = episode?.mp3Url;
+
+                    if (!audioUrl && slug) {
+                        // Fallback: Try constructing Podbean permalink
+                        // Deepgram can sometimes extract audio from webpage URLs
+                        let podbeanUrl = `https://pecharchive.podbean.com/e/${slug}`;
+                        audioUrl = podbeanUrl.replace(/([^:])\/\//g, '$1/');
+                    }
+
+                    if (!audioUrl) {
                         alert('Sermon audio URL not found.');
                         return;
                     }
@@ -250,7 +259,7 @@ export default {
 
                     try {
                         const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
-                        let transcript = await transcriptionService.transcribeAudio(episode.mp3Url, apiKey, keywords, !aiEnhanceEnabled);
+                        let transcript = await transcriptionService.transcribeAudio(audioUrl, apiKey, keywords, !aiEnhanceEnabled);
 
                         // Apply replacement phrases
                         transcript = applyReplacements(transcript);
@@ -340,7 +349,7 @@ export default {
                 });
             }
 
-            // AI Enhancement Button (Puter.js)
+            // AI Enhancement Button (OpenAI)
             const enhanceBtn = document.getElementById('btn-enhance-transcript');
             const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
 
@@ -410,9 +419,9 @@ Here is the transcript to format:`;
 
                         if (!response.ok) {
                             const errData = await response.json().catch(() => ({}));
-                            if (response.status === 401) throw new Error('Invalid API Key');
-                            if (response.status === 429) throw new Error('Rate limit exceeded');
-                            throw new Error(errData.error?.message || `API Error: ${response.status}`);
+                            if (response.status === 401) throw new Error('Invalid OpenAI API Key');
+                            if (response.status === 429) throw new Error('OpenAI Rate Limit Exceeded. Check your billing/credits.');
+                            throw new Error(errData.error?.message || `OpenAI API Error: ${response.status}`);
                         }
 
                         const data = await response.json();
@@ -443,7 +452,7 @@ Here is the transcript to format:`;
                         }
                     } catch (err) {
                         console.error('AI Enhancement failed:', err);
-                        alert('Enhancement failed. Please try again or sign in to Puter.');
+                        alert(`Enhancement failed: ${err.message}`);
                         enhanceBtn.innerHTML = '<i class="fas fa-magic"></i> Enhance Readability';
                         enhanceBtn.disabled = false;
                     }
