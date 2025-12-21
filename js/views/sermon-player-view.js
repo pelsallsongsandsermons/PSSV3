@@ -357,9 +357,10 @@ export default {
                         return;
                     }
 
-                    // Check if Puter is available
-                    if (typeof puter === 'undefined') {
-                        alert('Puter AI is not available. Please reload the app.');
+                    // Check for OpenAI API Key
+                    const apiKey = localStorage.getItem('openai_api_key');
+                    if (!apiKey) {
+                        alert('Missing OpenAI API Key. Please add it in Settings.');
                         return;
                     }
 
@@ -382,23 +383,42 @@ CRITICAL RULES:
 
 Here is the transcript to format:`;
 
-                        const fullPrompt = `${userPrompt}\n\n${singleBlockText}`;
-
-                        // Determine IModel to use
-                        let selectedModel = localStorage.getItem('ai_enhance_model') || 'gpt-4o-mini';
+                        // Determine Model
+                        let selectedModel = localStorage.getItem('ai_enhance_model') || 'gpt-5.1';
+                        // Handle "custom" case or if model is passed
                         if (selectedModel === 'custom') {
-                            selectedModel = localStorage.getItem('ai_custom_model_string') || 'gpt-4o-mini';
+                            selectedModel = localStorage.getItem('ai_custom_model_string') || 'gpt-5.1';
                         }
 
                         console.log(`Using AI Model: ${selectedModel}`);
 
-                        const response = await puter.ai.chat(fullPrompt, {
-                            model: selectedModel,
-                            temperature: 0.3
+                        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${apiKey}`
+                            },
+                            body: JSON.stringify({
+                                model: selectedModel,
+                                messages: [
+                                    { role: "system", content: userPrompt },
+                                    { role: "user", content: singleBlockText }
+                                ],
+                                temperature: 0.3
+                            })
                         });
 
-                        if (response && response.message && response.message.content) {
-                            const markdownText = response.message.content;
+                        if (!response.ok) {
+                            const errData = await response.json().catch(() => ({}));
+                            if (response.status === 401) throw new Error('Invalid API Key');
+                            if (response.status === 429) throw new Error('Rate limit exceeded');
+                            throw new Error(errData.error?.message || `API Error: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        if (data.choices && data.choices[0] && data.choices[0].message) {
+                            const markdownText = data.choices[0].message.content;
 
                             // Store the markdown version
                             await transcriptionService.saveTranscript(slug, markdownText);

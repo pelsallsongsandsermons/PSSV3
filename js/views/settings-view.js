@@ -1,4 +1,4 @@
-import { DEEPGRAM_HELP } from '../data/help-text.js';
+import { DEEPGRAM_HELP, OPENAI_HELP } from '../data/help-text.js';
 
 export default {
     render: async () => {
@@ -26,6 +26,9 @@ Here is the transcript to format:`;
         const deepgramApiKey = localStorage.getItem('deepgram_api_key') || '';
         const deepgramKeywords = localStorage.getItem('deepgram_keywords') || 'Scripture, ministry, sermon, gospel';
         const replacementPhrases = localStorage.getItem('replacement_phrases') || 'gonna|going to\nwanna|want to';
+
+        // OpenAI Settings
+        const openaiApiKey = localStorage.getItem('openai_api_key') || '';
 
         return `
             <div class="view settings-view">
@@ -108,7 +111,7 @@ Here is the transcript to format:`;
                         <div class="setting-item">
                             <div class="setting-info">
                                 <span class="setting-label">AI Text Enhancement</span>
-                                <span class="setting-description">Use Puter AI to improve readability (adds paragraphs, headings, quotes)</span>
+                                <span class="setting-description">Use OpenAI to reformat transcript (paragraphs, headings)</span>
                             </div>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="toggle-ai-enhance" ${aiEnhanceEnabled ? 'checked' : ''}>
@@ -117,6 +120,18 @@ Here is the transcript to format:`;
                         </div>
 
                         <div id="ai-prompt-container" class="setting-item setting-item-block ${aiEnhanceEnabled ? '' : 'hidden'}">
+                            
+                            <div class="setting-item setting-item-block" style="margin-bottom: 20px;">
+                                <div class="setting-info">
+                                    <span class="setting-label">
+                                        OpenAI API Key
+                                        <button class="icon-btn help-btn" id="btn-openai-help" aria-label="Help"><i class="fas fa-question-circle"></i></button>
+                                    </span>
+                                    <span class="setting-description">Required for enhancement. Billed directly to you.</span>
+                                </div>
+                                <input type="password" id="openai-api-key" class="setting-input" value="${openaiApiKey}" placeholder="sk-...">
+                            </div>
+
                             <div class="setting-info">
                                 <span class="setting-label">AI Enhancement Prompt</span>
                                 <span class="setting-description">Customise how the AI reformats the transcript</span>
@@ -128,18 +143,16 @@ Here is the transcript to format:`;
 
                             <div class="setting-info">
                                 <span class="setting-label">AI Model</span>
-                                <span class="setting-description">Select the model used for enhancement</span>
+                                <span class="setting-description">Select the OpenAI model</span>
                             </div>
                             <select id="ai-enhance-model" class="setting-input" style="margin-bottom: 10px;">
-                                <option value="gpt-4o-mini">GPT-4o Mini (Default - Fast)</option>
-                                <option value="gpt-4o">GPT-4o (Best Overall)</option>
-                                <option value="claude-3-5-sonnet">Claude 3.5 Sonnet (Best for Writing)</option>
-                                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Large Context)</option>
-                                <option value="llama-3-70b">Llama 3 70B (Open Source)</option>
-                                <option value="mistral-large">Mistral Large</option>
+                                <option value="gpt-5.1">GPT-5.1 (Default)</option>
+                                <option value="gpt-4o">GPT-4o</option>
+                                <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                                <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast/Cheap)</option>
                                 <option value="custom">Custom Model...</option>
                             </select>
-                            <input type="text" id="ai-custom-model" class="setting-input hidden" placeholder="Enter custom model string (e.g. gpt-3.5-turbo)" style="margin-top: 5px;">
+                            <input type="text" id="ai-custom-model" class="setting-input hidden" placeholder="Enter custom model string (e.g. gpt-4o-2024-05-13)" style="margin-top: 5px;">
                         </div>
                     </div>
                 </div>
@@ -181,6 +194,14 @@ Here is the transcript to format:`;
                     <div class="modal-content help-modal-content">
                         ${DEEPGRAM_HELP}
                         <button class="btn-primary full-width-btn" style="margin-top: 10px;" id="close-deepgram-help">Got It</button>
+                    </div>
+                </div>
+
+                <!-- OpenAI Help Modal -->
+                <div id="openai-help-modal" class="modal hidden">
+                    <div class="modal-content help-modal-content">
+                        ${OPENAI_HELP}
+                        <button class="btn-primary full-width-btn" style="margin-top: 10px;" id="close-openai-help">Got It</button>
                     </div>
                 </div>
             </div>
