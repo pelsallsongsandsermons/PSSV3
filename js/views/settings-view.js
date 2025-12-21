@@ -424,5 +424,38 @@ Here is the transcript to format:`;
                 }
             });
         }
+
+        // OpenAI Settings Logic
+        const openaiKeyInput = document.getElementById('openai-api-key');
+        if (openaiKeyInput) {
+            openaiKeyInput.addEventListener('change', (e) => {
+                localStorage.setItem('openai_api_key', e.target.value.trim());
+            });
+        }
+
+        // OpenAI Help Modal
+        const openaiHelpBtn = document.getElementById('btn-openai-help');
+        const openaiHelpModal = document.getElementById('openai-help-modal');
+        const closeOpenaiHelpBtn = document.getElementById('close-openai-help');
+
+        if (openaiHelpBtn && openaiHelpModal) {
+            openaiHelpBtn.addEventListener('click', () => {
+                openaiHelpModal.classList.remove('hidden');
+            });
+        }
+
+        if (closeOpenaiHelpBtn && openaiHelpModal) {
+            closeOpenaiHelpBtn.addEventListener('click', () => {
+                openaiHelpModal.classList.add('hidden');
+            });
+        }
+
+        if (openaiHelpModal) {
+            openaiHelpModal.addEventListener('click', (e) => {
+                if (e.target === openaiHelpModal) {
+                    openaiHelpModal.classList.add('hidden');
+                }
+            });
+        }
     }
 };
