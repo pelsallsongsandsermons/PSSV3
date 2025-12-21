@@ -428,7 +428,7 @@ Here is the transcript to format:`;
         // OpenAI Settings Logic
         const openaiKeyInput = document.getElementById('openai-api-key');
         if (openaiKeyInput) {
-            openaiKeyInput.addEventListener('change', (e) => {
+            openaiKeyInput.addEventListener('input', (e) => {
                 localStorage.setItem('openai_api_key', e.target.value.trim());
             });
         }
