@@ -295,30 +295,42 @@ export default {
                 // Using a try-catch for rendering to handle potential errors
                 try {
                     const page = await pdfDoc.getPage(num);
-                    const viewport = page.getViewport({ scale: 1 });
+                    // 1. Get Device Pixel Ratio
+                    const dpr = window.devicePixelRatio || 1;
 
-                    // Calculate scale to fit the canvas within the wrapper
+                    // 2. Calculate "CSS Scale" (fit within container) based on unscaled viewport
+                    // We start with scale 1 to get natural dimensions
+                    const unscaledViewport = page.getViewport({ scale: 1 });
                     const wrapperWidth = slideWrapper.clientWidth;
                     const wrapperHeight = slideWrapper.clientHeight;
 
-                    let scale = 1;
-                    if (viewport.width > wrapperWidth || viewport.height > wrapperHeight) {
-                        scale = Math.min(wrapperWidth / viewport.width, wrapperHeight / viewport.height);
+                    let fitScale = 1;
+                    if (unscaledViewport.width > wrapperWidth || unscaledViewport.height > wrapperHeight) {
+                        fitScale = Math.min(wrapperWidth / unscaledViewport.width, wrapperHeight / unscaledViewport.height);
                     }
 
-                    // If the viewport is smaller than the wrapper, scale up to fill width
-                    if (viewport.width * scale < wrapperWidth && viewport.height * scale < wrapperHeight) {
-                        scale = wrapperWidth / viewport.width;
+                    // If smaller, scale up to fit width
+                    if (unscaledViewport.width * fitScale < wrapperWidth && unscaledViewport.height * fitScale < wrapperHeight) {
+                        fitScale = wrapperWidth / unscaledViewport.width;
                     }
 
-                    const scaledViewport = page.getViewport({ scale: scale });
+                    // 3. Create high-res viewport using DPR
+                    // efficientScale incorporates both the fit factor and the pixel density
+                    const outputScale = fitScale * dpr;
+                    const viewport = page.getViewport({ scale: outputScale });
 
-                    canvas.height = scaledViewport.height;
-                    canvas.width = scaledViewport.width;
+                    // 4. Set Canvas dimensions (High Res)
+                    canvas.width = Math.floor(viewport.width);
+                    canvas.height = Math.floor(viewport.height);
+
+                    // 5. Set Canvas CSS dimensions (Display Size)
+                    canvas.style.width = `${Math.floor(viewport.width / dpr)}px`;
+                    canvas.style.height = `${Math.floor(viewport.height / dpr)}px`;
 
                     const renderContext = {
                         canvasContext: ctx,
-                        viewport: scaledViewport,
+                        viewport: viewport,
+                        transform: outputScale !== 1 ? [1, 0, 0, 1, 0, 0] : null // Identity transform usually fine, Viewport handles scale
                     };
                     await page.render(renderContext).promise;
                     pageRendering = false;
