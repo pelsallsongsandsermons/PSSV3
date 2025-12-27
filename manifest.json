@@ -4,8 +4,8 @@
     "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",
-    "background_color": "#1a1a1a",
-    "theme_color": "#1a1a1a",
+    "background_color": "#C1E1C1",
+    "theme_color": "#C1E1C1",
     "icons": [
         {
             "src": "assets/images/app_launcher_icon.png",
