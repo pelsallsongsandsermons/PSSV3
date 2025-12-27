@@ -17,28 +17,40 @@ const DEFAULT_REPLACEMENTS = [
 /**
  * Apply replacement phrases to transcribed text
  * @param {string} text - The transcribed text
+ * @param {string} replacementSettings - The replacement phrases JSON string from settings
  * @returns {string} - Text with replacements applied
  */
-function applyReplacements(text) {
+function applyReplacements(text, replacementSettings) {
     let result = text;
 
-    // Get user-defined replacements from localStorage
-    const userReplacements = localStorage.getItem('replacement_phrases') || '';
-    const pairs = userReplacements.split('\n').filter(line => line.includes('|'));
-
-    // Combine defaults with user replacements
+    // Default replacements (always applied)
     const allReplacements = [...DEFAULT_REPLACEMENTS];
-    for (const pair of pairs) {
-        const [from, to] = pair.split('|').map(s => s.trim());
-        if (from && to) {
-            allReplacements.push([from, to]);
+
+    // Get user-defined replacements from Supabase settings (JSON format)
+    if (replacementSettings) {
+        try {
+            // Check if it's JSON (starts with {)
+            // If the user hasn't migrated yet, it might still vary, but requirement is strict JSON format now.
+            const parsed = JSON.parse(replacementSettings);
+            for (const [from, to] of Object.entries(parsed)) {
+                if (from && to) {
+                    allReplacements.push([from, to]);
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to parse replacement_phrases JSON:', e);
+            // Optional: fallback to old pipe format if needed, but for now strict compliance to request
         }
     }
 
     // Apply all replacements (case-insensitive)
     for (const [from, to] of allReplacements) {
-        const regex = new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-        result = result.replace(regex, to);
+        try {
+            const regex = new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            result = result.replace(regex, to);
+        } catch (err) {
+            console.warn(`Invalid regex for replacement: ${from}`, err);
+        }
     }
 
     return result;
@@ -223,7 +235,7 @@ export default {
                         }
 
                         // Hide enhance button if already enhanced
-                        if (enhanceBtn && aiEnhanceEnabled) {
+                        if (enhanceBtn) {
                             if (transcriptText.dataset.enhanced === 'true') enhanceBtn.classList.add('hidden');
                             else enhanceBtn.classList.remove('hidden');
                         }
@@ -233,11 +245,29 @@ export default {
                     }
 
                     const apiKey = localStorage.getItem('deepgram_api_key');
-                    const keywords = localStorage.getItem('deepgram_keywords');
 
                     if (!apiKey) {
-                        alert('Deepgram API Key is missing. Please add it in Settings.');
+                        alert('Transcription Key is missing. Please add it in Settings.');
                         return;
+                    }
+
+                    // Fetch Settings from Supabase
+                    let keywords = '';
+                    let replacementPhrases = '';
+
+                    try {
+                        const { data: settings, error } = await window.app.supabase.client
+                            .from('settings')
+                            .select('transcription_keywords, replacement_phrases')
+                            .maybeSingle(); // Use maybeSingle to avoid error if table empty, though it shouldn't be
+
+                        if (settings) {
+                            keywords = settings.transcription_keywords || '';
+                            replacementPhrases = settings.replacement_phrases || '';
+                            console.log('Loaded transcription settings from Supabase');
+                        }
+                    } catch (err) {
+                        console.warn('Failed to load settings from Supabase, using defaults:', err);
                     }
 
                     let audioUrl = episode?.mp3Url;
@@ -258,11 +288,18 @@ export default {
                     transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
 
                     try {
-                        const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
-                        let transcript = await transcriptionService.transcribeAudio(audioUrl, apiKey, keywords, !aiEnhanceEnabled);
+                        // Automatically enhance if OpenAI key is present (User Requirement 2)
+                        // But wait, the transcribe logic uses Deepgram. 
+                        // The "Enhance" is a separate step usually, OR we pass !aiEnhanceEnabled to transcribeAudio?
+                        // Original code: transcribeAudio(..., !aiEnhanceEnabled) -> includeParagraphs
+                        // If enhancement is "assumed enabled", we might NOT want deepgram paragraphs if we are going to overwrite them?
+                        // Actually, Deepgram paragraphs are good as a base.
+                        // Let's keep includeParagraphs = true for Deepgram as a baseline.
+
+                        let transcript = await transcriptionService.transcribeAudio(audioUrl, apiKey, keywords, true);
 
                         // Apply replacement phrases
-                        transcript = applyReplacements(transcript);
+                        transcript = applyReplacements(transcript, replacementPhrases);
 
                         // Save to IndexedDB
                         await transcriptionService.saveTranscript(slug, transcript);
@@ -351,9 +388,12 @@ export default {
 
             // AI Enhancement Button (OpenAI)
             const enhanceBtn = document.getElementById('btn-enhance-transcript');
-            const aiEnhanceEnabled = localStorage.getItem('ai_enhance_enabled') === 'true';
 
-            if (enhanceBtn && aiEnhanceEnabled) {
+            // User Requirement 2: Assume enabled if OpenAI key is present
+            const openaiKey = localStorage.getItem('openai_api_key');
+            const aiEnhanceAvailable = !!openaiKey;
+
+            if (enhanceBtn && aiEnhanceAvailable) {
                 enhanceBtn.classList.remove('hidden');
 
                 enhanceBtn.addEventListener('click', async () => {
@@ -366,10 +406,10 @@ export default {
                         return;
                     }
 
-                    // Check for OpenAI API Key
+                    // Check for OpenAI API Key (already checked for visibility, but check again)
                     const apiKey = localStorage.getItem('openai_api_key');
                     if (!apiKey) {
-                        alert('Missing OpenAI API Key. Please add it in Settings.');
+                        alert('Missing Enhanced readability Key. Please add it in Settings.');
                         return;
                     }
 
@@ -377,7 +417,24 @@ export default {
                     enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
 
                     try {
-                        const userPrompt = localStorage.getItem('ai_enhance_prompt') || `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
+                        // Fetch AI Prompt from Supabase
+                        let userPrompt = '';
+                        try {
+                            const { data: settings } = await window.app.supabase.client
+                                .from('settings')
+                                .select('ai_enhancement_prompt')
+                                .maybeSingle();
+
+                            if (settings && settings.ai_enhancement_prompt) {
+                                userPrompt = settings.ai_enhancement_prompt;
+                            }
+                        } catch (err) {
+                            console.warn('Failed to fetch AI prompt from Supabase:', err);
+                        }
+
+                        // Fallback default prompt if DB is empty
+                        if (!userPrompt) {
+                            userPrompt = `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
 
 CRITICAL RULES:
 1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. "the the").
@@ -391,6 +448,7 @@ CRITICAL RULES:
    - Specific formatting for quotes and Bible verses.
 
 Here is the transcript to format:`;
+                        }
 
                         // Determine Model
                         let selectedModel = localStorage.getItem('ai_enhance_model') || 'gpt-5.1';

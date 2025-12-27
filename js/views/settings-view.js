@@ -70,10 +70,10 @@ Here is the transcript to format:`;
                     <div class="setting-item">
                         <div class="setting-info">
                             <span class="setting-label">Enable Transcription</span>
-                            <span class="setting-description">Transcribe sermons to text using Deepgram</span>
+                            <span class="setting-description">Transcribe sermons to text</span>
                         </div>
                         <div class="setting-actions">
-                            <button id="btn-deepgram-help" class="icon-btn help-btn" title="How to get an API Key">
+                            <button id="btn-deepgram-help" class="icon-btn help-btn" title="How to get a Key">
                                 <i class="fas fa-question-circle"></i>
                             </button>
                             <label class="toggle-switch">
@@ -83,77 +83,53 @@ Here is the transcript to format:`;
                         </div>
                     </div>
 
+                    <!-- Transcription Settings Container -->
                     <div id="transcription-settings" class="${transcriptionEnabled ? '' : 'hidden'}">
-                        <div class="setting-item">
+                        
+                        <!-- MISSING KEYS PROMPT -->
+                        <div id="missing-keys-container" class="setting-item setting-item-block hidden" style="background-color: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); padding: 15px; border-radius: 8px;">
                             <div class="setting-info">
-                                <span class="setting-label">Deepgram API Key</span>
-                                <span class="setting-description">Enter your Deepgram API Key</span>
+                                <span class="setting-label" style="color: var(--text-color);">Request Transcription Keys</span>
+                                <span class="setting-description">To use transcription, you need access keys. Request them from the administrator.</span>
                             </div>
-                            <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
+                            <input type="email" id="request-keys-email" class="setting-input" placeholder="Your Email Address" style="margin-top: 10px;">
+                            <button id="btn-request-keys" class="btn-primary full-width-btn" style="margin-top: 10px;">Request Keys</button>
+                            <div id="request-keys-feedback" style="margin-top: 10px; font-size: 0.9em;"></div>
                         </div>
 
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label">Keyterm Phrases</span>
-                                <span class="setting-description">Comma-separated phrases for context</span>
-                            </div>
-                            <input type="text" id="deepgram-keywords" class="setting-input" value="${deepgramKeywords}" placeholder="e.g. Scripture, ministry...">
-                        </div>
-
-                        <div class="setting-item setting-item-block">
-                            <div class="setting-info">
-                                <span class="setting-label">Replacement Phrases</span>
-                                <span class="setting-description">One pair per line: transcribed|replacement</span>
-                            </div>
-                            <textarea id="replacement-phrases" class="setting-textarea" rows="4" placeholder="gonna|going to">${replacementPhrases}</textarea>
-                        </div>
-
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <span class="setting-label">AI Text Enhancement</span>
-                                <span class="setting-description">Use OpenAI to reformat transcript (paragraphs, headings)</span>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="toggle-ai-enhance" ${aiEnhanceEnabled ? 'checked' : ''}>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <div id="ai-prompt-container" class="setting-item setting-item-block ${aiEnhanceEnabled ? '' : 'hidden'}">
-                            
-                            <div class="setting-item setting-item-block" style="margin-bottom: 20px;">
+                        <!-- KEYS INPUTS -->
+                        <div id="keys-inputs-container">
+                            <div class="setting-item">
                                 <div class="setting-info">
-                                    <span class="setting-label">
-                                        OpenAI API Key
-                                        <button class="icon-btn help-btn" id="btn-openai-help" aria-label="Help"><i class="fas fa-question-circle"></i></button>
-                                    </span>
-                                    <span class="setting-description">Required for enhancement. Billed directly to you.</span>
+                                    <span class="setting-label">Transcription Key</span>
+                                    <span class="setting-description">Enter your Transcription Key</span>
+                                </div>
+                                <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Enhanced readability Key</span>
+                                    <span class="setting-description">Optional. For AI formatting.</span>
                                 </div>
                                 <input type="password" id="openai-api-key" class="setting-input" value="${openaiApiKey}" placeholder="sk-...">
                             </div>
-
-                            <div class="setting-info">
-                                <span class="setting-label">AI Enhancement Prompt</span>
-                                <span class="setting-description">Customise how the AI reformats the transcript</span>
-                            </div>
-                            <textarea id="ai-enhance-prompt" class="setting-textarea" rows="10" placeholder="Enter AI instructions...">${aiEnhancePrompt}</textarea>
-                            <button id="reset-ai-prompt" class="btn-secondary" style="margin-top: 10px; font-size: 0.8rem; padding: 5px 10px;">Reset to Default</button>
-                            
-                            <div class="divider-line" style="margin: 20px 0;"></div>
-
-                            <div class="setting-info">
-                                <span class="setting-label">AI Model</span>
-                                <span class="setting-description">Select the OpenAI model</span>
-                            </div>
-                            <select id="ai-enhance-model" class="setting-input" style="margin-bottom: 10px;">
-                                <option value="gpt-5.1">GPT-5.1 (Default)</option>
-                                <option value="gpt-4o">GPT-4o</option>
-                                <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                                <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast/Cheap)</option>
-                                <option value="custom">Custom Model...</option>
-                            </select>
-                            <input type="text" id="ai-custom-model" class="setting-input hidden" placeholder="Enter custom model string (e.g. gpt-4o-2024-05-13)" style="margin-top: 5px;">
                         </div>
+                        
+                        <div class="divider-line" style="margin: 20px 0;"></div>
+
+                        <div class="setting-info">
+                            <span class="setting-label">AI Model</span>
+                            <span class="setting-description">Select the OpenAI model (if key provided)</span>
+                        </div>
+                        <select id="ai-enhance-model" class="setting-input" style="margin-bottom: 10px;">
+                            <option value="gpt-5.1">GPT-5.1 (Default)</option>
+                            <option value="gpt-4o">GPT-4o</option>
+                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast/Cheap)</option>
+                            <option value="custom">Custom Model...</option>
+                        </select>
+                        <input type="text" id="ai-custom-model" class="setting-input hidden" placeholder="Enter custom model string (e.g. gpt-4o-2024-05-13)" style="margin-top: 5px;">
                     </div>
                 </div>
 
@@ -215,12 +191,11 @@ Here is the transcript to format:`;
             versionEl.textContent = window.app.version;
         }
 
-        // Toggle handler
+        // Toggle handler for Custom Player
         const toggle = document.getElementById('toggle-custom-player');
         if (toggle) {
             toggle.addEventListener('change', (e) => {
                 localStorage.setItem('use_custom_player', e.target.checked);
-                console.log('Custom player setting:', e.target.checked);
             });
         }
 
@@ -228,15 +203,33 @@ Here is the transcript to format:`;
         if (screenToggle) {
             screenToggle.addEventListener('change', (e) => {
                 localStorage.setItem('keep_screen_on', e.target.checked);
-                console.log('Keep screen on setting:', e.target.checked);
             });
         }
 
-        // Transcription Toggles
+        // Transcription UI Logic
         const transcriptionToggle = document.getElementById('toggle-transcription');
         const transcriptionSettings = document.getElementById('transcription-settings');
         const apiKeyInput = document.getElementById('deepgram-api-key');
-        const keywordsInput = document.getElementById('deepgram-keywords');
+        const openaiKeyInput = document.getElementById('openai-api-key');
+
+        // Request Keys Logic
+        const missingKeysContainer = document.getElementById('missing-keys-container');
+        const requestKeysEmail = document.getElementById('request-keys-email');
+        const requestKeysBtn = document.getElementById('btn-request-keys');
+        const requestKeysFeedback = document.getElementById('request-keys-feedback');
+
+        // Function to check visibility of "Request Keys"
+        const updateRequestKeysVisibility = () => {
+            const key = localStorage.getItem('deepgram_api_key');
+            // If enabled, and key is missing/empty, show request UI
+            const isEnabled = transcriptionToggle ? transcriptionToggle.checked : false;
+
+            if (isEnabled && (!key || key.trim() === '')) {
+                if (missingKeysContainer) missingKeysContainer.classList.remove('hidden');
+            } else {
+                if (missingKeysContainer) missingKeysContainer.classList.add('hidden');
+            }
+        };
 
         if (transcriptionToggle) {
             transcriptionToggle.addEventListener('change', (e) => {
@@ -246,106 +239,63 @@ Here is the transcript to format:`;
                     if (isEnabled) transcriptionSettings.classList.remove('hidden');
                     else transcriptionSettings.classList.add('hidden');
                 }
+                updateRequestKeysVisibility();
             });
         }
 
         if (apiKeyInput) {
-            apiKeyInput.addEventListener('change', (e) => {
+            apiKeyInput.addEventListener('input', (e) => {
                 localStorage.setItem('deepgram_api_key', e.target.value.trim());
+                updateRequestKeysVisibility();
+            });
+            // Also update on change to be safe
+            apiKeyInput.addEventListener('change', updateRequestKeysVisibility);
+        }
+
+        if (openaiKeyInput) {
+            openaiKeyInput.addEventListener('input', (e) => {
+                localStorage.setItem('openai_api_key', e.target.value.trim());
             });
         }
 
-        if (keywordsInput) {
-            keywordsInput.addEventListener('change', (e) => {
-                localStorage.setItem('deepgram_keywords', e.target.value.trim());
-            });
-        }
+        // Initial check
+        updateRequestKeysVisibility();
 
-        // Transcription Engine
-        const engineSelect = document.getElementById('transcription-engine');
-        const deepgramGroup = document.getElementById('deepgram-settings-group');
-        if (engineSelect) {
-            engineSelect.addEventListener('change', (e) => {
-                const engine = e.target.value;
-                localStorage.setItem('transcription_engine', engine);
 
-                if (deepgramGroup) {
-                    if (engine === 'deepgram') deepgramGroup.classList.remove('hidden');
-                    else deepgramGroup.classList.add('hidden');
+        // Handle "Request Keys" Click
+        if (requestKeysBtn) {
+            requestKeysBtn.addEventListener('click', async () => {
+                const email = requestKeysEmail.value.trim();
+                if (!email) {
+                    alert('Please enter your email address.');
+                    return;
+                }
+
+                requestKeysBtn.disabled = true;
+                requestKeysBtn.textContent = 'Sending...';
+                requestKeysFeedback.textContent = '';
+                requestKeysFeedback.className = '';
+
+                try {
+                    const { data, error } = await window.app.supabase.client.functions.invoke('send-keys-request', {
+                        body: { userEmail: email }
+                    });
+
+                    if (error) throw error;
+
+                    requestKeysFeedback.textContent = 'Request sent successfully! The administrator will contact you.';
+                    requestKeysFeedback.style.color = 'green';
+                    requestKeysBtn.textContent = 'Sent!';
+                } catch (err) {
+                    console.error('Failed to request keys:', err);
+                    requestKeysFeedback.textContent = 'Failed to send request. ' + (err.message || 'Unknown error');
+                    requestKeysFeedback.style.color = 'red';
+                    requestKeysBtn.textContent = 'Request Keys';
+                    requestKeysBtn.disabled = false;
                 }
             });
         }
 
-        // Replacement Phrases
-        const replacementInput = document.getElementById('replacement-phrases');
-        if (replacementInput) {
-            replacementInput.addEventListener('change', (e) => {
-                localStorage.setItem('replacement_phrases', e.target.value);
-            });
-        }
-
-        // AI Enhancement Toggle
-        const aiEnhanceToggle = document.getElementById('toggle-ai-enhance');
-        const aiPromptContainer = document.getElementById('ai-prompt-container');
-        const aiPromptTextarea = document.getElementById('ai-enhance-prompt');
-        const resetPromptBtn = document.getElementById('reset-ai-prompt');
-
-        if (aiEnhanceToggle) {
-            aiEnhanceToggle.addEventListener('change', (e) => {
-                const isEnabled = e.target.checked;
-                localStorage.setItem('ai_enhance_enabled', isEnabled);
-
-                if (aiPromptContainer) {
-                    if (isEnabled) aiPromptContainer.classList.remove('hidden');
-                    else aiPromptContainer.classList.add('hidden');
-                }
-            });
-        }
-
-        if (aiPromptTextarea) {
-            aiPromptTextarea.addEventListener('change', (e) => {
-                localStorage.setItem('ai_enhance_prompt', e.target.value);
-            });
-        }
-
-        if (resetPromptBtn && aiPromptTextarea) {
-            resetPromptBtn.addEventListener('click', () => {
-                const defaultPrompt = `You are a transcript formatter. Your ONLY task is to add markdown headings and paragraph breaks to the following sermon transcript.
-
-CRITICAL RULES:
-1. Keep 100% of the original spoken words in their exact order, EXCEPT you should remove obvious stuttering or immediately repeated duplicate words (e.g. "the the").
-2. Identify when the speaker is quoting Bible text or a quote from someone else, and format these clearly (e.g. using blockquotes or italics).
-3. Change obvious number words to numerical digits (e.g. "forty-two" to "42", "one hundred" to "100").
-4. DO NOT summarize or rewrite the content.
-5. DO NOT fix general grammar - leave the speaker's natural voice intact.
-6. ONLY add:
-   - ## Heading titles where major topic changes occur.
-   - Blank lines between paragraphs for readability.
-   - Specific formatting for quotes and Bible verses.
-
-Here is the transcript to format:`;
-                aiPromptTextarea.value = defaultPrompt;
-                localStorage.setItem('ai_enhance_prompt', defaultPrompt);
-                alert('Prompt reset to default.');
-            });
-        }
-        // Theme Toggle
-        const themeToggle = document.getElementById('toggle-theme');
-        if (themeToggle) {
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            themeToggle.checked = currentTheme === 'dark';
-
-            themeToggle.addEventListener('change', (e) => {
-                const newTheme = e.target.checked ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-
-                if (newTheme === 'dark') {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
-            });
-        }
 
         // AI Model Selection Logic
         const aiModelSelect = document.getElementById('ai-enhance-model');
@@ -353,7 +303,7 @@ Here is the transcript to format:`;
 
         if (aiModelSelect && aiCustomModelInput) {
             // Load saved settings
-            const savedModel = localStorage.getItem('ai_enhance_model') || 'gpt-4o-mini';
+            const savedModel = localStorage.getItem('ai_enhance_model') || 'gpt-5.1';
             const savedCustomModelString = localStorage.getItem('ai_custom_model_string') || '';
 
             // Set initial state
@@ -419,14 +369,6 @@ Here is the transcript to format:`;
             });
         }
 
-        // OpenAI Settings Logic
-        const openaiKeyInput = document.getElementById('openai-api-key');
-        if (openaiKeyInput) {
-            openaiKeyInput.addEventListener('input', (e) => {
-                localStorage.setItem('openai_api_key', e.target.value.trim());
-            });
-        }
-
         // OpenAI Help Modal
         const openaiHelpBtn = document.getElementById('btn-openai-help');
         const openaiHelpModal = document.getElementById('openai-help-modal');
@@ -448,6 +390,24 @@ Here is the transcript to format:`;
             openaiHelpModal.addEventListener('click', (e) => {
                 if (e.target === openaiHelpModal) {
                     openaiHelpModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('toggle-theme');
+        if (themeToggle) {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            themeToggle.checked = currentTheme === 'dark';
+
+            themeToggle.addEventListener('change', (e) => {
+                const newTheme = e.target.checked ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+
+                if (newTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
                 }
             });
         }
