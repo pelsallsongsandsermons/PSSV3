@@ -258,7 +258,7 @@ export default {
                     try {
                         const { data: settings, error } = await window.app.supabase.client
                             .from('settings')
-                            .select('transcription_keywords, replacement_phrases')
+                            .select('transcription_keywords, replacement_phrases, ai_transcription')
                             .maybeSingle(); // Use maybeSingle to avoid error if table empty, though it shouldn't be
 
                         if (settings) {
@@ -417,19 +417,22 @@ export default {
                     enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
 
                     try {
-                        // Fetch AI Prompt from Supabase
+                        // Fetch AI Prompt and Model from Supabase
                         let userPrompt = '';
+                        let selectedModel = 'gpt-5.1'; // Default
+
                         try {
                             const { data: settings } = await window.app.supabase.client
                                 .from('settings')
-                                .select('ai_enhancement_prompt')
+                                .select('ai_enhancement_prompt, ai_transcription')
                                 .maybeSingle();
 
-                            if (settings && settings.ai_enhancement_prompt) {
-                                userPrompt = settings.ai_enhancement_prompt;
+                            if (settings) {
+                                if (settings.ai_enhancement_prompt) userPrompt = settings.ai_enhancement_prompt;
+                                if (settings.ai_transcription) selectedModel = settings.ai_transcription;
                             }
                         } catch (err) {
-                            console.warn('Failed to fetch AI prompt from Supabase:', err);
+                            console.warn('Failed to fetch AI settings from Supabase:', err);
                         }
 
                         // Fallback default prompt if DB is empty
@@ -448,13 +451,6 @@ CRITICAL RULES:
    - Specific formatting for quotes and Bible verses.
 
 Here is the transcript to format:`;
-                        }
-
-                        // Determine Model
-                        let selectedModel = localStorage.getItem('ai_enhance_model') || 'gpt-5.1';
-                        // Handle "custom" case or if model is passed
-                        if (selectedModel === 'custom') {
-                            selectedModel = localStorage.getItem('ai_custom_model_string') || 'gpt-5.1';
                         }
 
                         console.log(`Using AI Model: ${selectedModel}`);

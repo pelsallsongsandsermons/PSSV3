@@ -92,7 +92,8 @@ Here is the transcript to format:`;
                                 <span class="setting-label" style="color: var(--text-color);">Request Transcription Keys</span>
                                 <span class="setting-description">To use transcription, you need access keys. Request them from the administrator.</span>
                             </div>
-                            <input type="email" id="request-keys-email" class="setting-input" placeholder="Your Email Address" style="margin-top: 10px;">
+                            <label for="request-keys-email" style="display: block; margin-top: 10px; font-size: 0.9em; color: var(--text-color);">Enter your email address</label>
+                            <input type="email" id="request-keys-email" class="setting-input" placeholder="Your Email Address" style="margin-top: 5px;">
                             <button id="btn-request-keys" class="btn-primary full-width-btn" style="margin-top: 10px;">Request Keys</button>
                             <div id="request-keys-feedback" style="margin-top: 10px; font-size: 0.9em;"></div>
                         </div>
@@ -102,7 +103,7 @@ Here is the transcript to format:`;
                             <div class="setting-item">
                                 <div class="setting-info">
                                     <span class="setting-label">Transcription Key</span>
-                                    <span class="setting-description">Enter your Transcription Key</span>
+                                    <span class="setting-description">Basic transcription returning paragraphs of text</span>
                                 </div>
                                 <input type="password" id="deepgram-api-key" class="setting-input" value="${deepgramApiKey}" placeholder="Enter Key...">
                             </div>
@@ -110,26 +111,11 @@ Here is the transcript to format:`;
                             <div class="setting-item">
                                 <div class="setting-info">
                                     <span class="setting-label">Enhanced readability Key</span>
-                                    <span class="setting-description">Optional. For AI formatting.</span>
+                                    <span class="setting-description">Formats text with headings and identifies scripture/quotes</span>
                                 </div>
                                 <input type="password" id="openai-api-key" class="setting-input" value="${openaiApiKey}" placeholder="sk-...">
                             </div>
                         </div>
-                        
-                        <div class="divider-line" style="margin: 20px 0;"></div>
-
-                        <div class="setting-info">
-                            <span class="setting-label">AI Model</span>
-                            <span class="setting-description">Select the OpenAI model (if key provided)</span>
-                        </div>
-                        <select id="ai-enhance-model" class="setting-input" style="margin-bottom: 10px;">
-                            <option value="gpt-5.1">GPT-5.1 (Default)</option>
-                            <option value="gpt-4o">GPT-4o</option>
-                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast/Cheap)</option>
-                            <option value="custom">Custom Model...</option>
-                        </select>
-                        <input type="text" id="ai-custom-model" class="setting-input hidden" placeholder="Enter custom model string (e.g. gpt-4o-2024-05-13)" style="margin-top: 5px;">
                     </div>
                 </div>
 
@@ -297,41 +283,7 @@ Here is the transcript to format:`;
         }
 
 
-        // AI Model Selection Logic
-        const aiModelSelect = document.getElementById('ai-enhance-model');
-        const aiCustomModelInput = document.getElementById('ai-custom-model');
 
-        if (aiModelSelect && aiCustomModelInput) {
-            // Load saved settings
-            const savedModel = localStorage.getItem('ai_enhance_model') || 'gpt-5.1';
-            const savedCustomModelString = localStorage.getItem('ai_custom_model_string') || '';
-
-            // Set initial state
-            aiModelSelect.value = savedModel;
-            aiCustomModelInput.value = savedCustomModelString;
-
-            if (savedModel === 'custom') {
-                aiCustomModelInput.classList.remove('hidden');
-            }
-
-            // Model Selection Change Listener
-            aiModelSelect.addEventListener('change', (e) => {
-                const selectedModel = e.target.value;
-                localStorage.setItem('ai_enhance_model', selectedModel);
-
-                if (selectedModel === 'custom') {
-                    aiCustomModelInput.classList.remove('hidden');
-                    aiCustomModelInput.focus();
-                } else {
-                    aiCustomModelInput.classList.add('hidden');
-                }
-            });
-
-            // Custom Model String Input Listener
-            aiCustomModelInput.addEventListener('change', (e) => {
-                localStorage.setItem('ai_custom_model_string', e.target.value.trim());
-            });
-        }
 
         // Force Reload button
         const btnReload = document.getElementById('btn-force-reload');
