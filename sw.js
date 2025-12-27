@@ -46,8 +46,9 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
-    // Only cache GET requests
+    // Only cache GET requests and HTTP/HTTPS schemes (ignore chrome-extension:// etc)
     if (event.request.method !== 'GET') return;
+    if (!event.request.url.startsWith('http')) return;
     // Navigation requests -> network first, fall back to cache
     if (event.request.mode === 'navigate') {
         event.respondWith(

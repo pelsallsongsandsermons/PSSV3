@@ -1,4 +1,4 @@
-import { DEEPGRAM_HELP, OPENAI_HELP } from '../data/help-text.js';
+import { OPENAI_HELP } from '../data/help-text.js';
 
 export default {
     render: async () => {
@@ -73,9 +73,6 @@ Here is the transcript to format:`;
                             <span class="setting-description">Transcribe sermons to text</span>
                         </div>
                         <div class="setting-actions">
-                            <button id="btn-deepgram-help" class="icon-btn help-btn" title="How to get a Key">
-                                <i class="fas fa-question-circle"></i>
-                            </button>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="toggle-transcription" ${transcriptionEnabled ? 'checked' : ''}>
                                 <span class="toggle-slider"></span>
@@ -151,13 +148,7 @@ Here is the transcript to format:`;
                     <p>&copy; 2025 Pelsall Evangelical Church</p>
                 </div>
 
-                <!-- Deepgram Help Modal -->
-                <div id="deepgram-help-modal" class="modal hidden">
-                    <div class="modal-content help-modal-content">
-                        ${DEEPGRAM_HELP}
-                        <button class="btn-primary full-width-btn" style="margin-top: 10px;" id="close-deepgram-help">Got It</button>
-                    </div>
-                </div>
+
 
                 <!-- OpenAI Help Modal -->
                 <div id="openai-help-modal" class="modal hidden">
@@ -295,31 +286,7 @@ Here is the transcript to format:`;
             });
         }
 
-        // Deepgram Help Modal
-        const helpBtn = document.getElementById('btn-deepgram-help');
-        const helpModal = document.getElementById('deepgram-help-modal');
-        const closeHelpBtn = document.getElementById('close-deepgram-help');
 
-        if (helpBtn && helpModal) {
-            helpBtn.addEventListener('click', () => {
-                helpModal.classList.remove('hidden');
-            });
-        }
-
-        if (closeHelpBtn && helpModal) {
-            closeHelpBtn.addEventListener('click', () => {
-                helpModal.classList.add('hidden');
-            });
-        }
-
-        // Close help modal on background click
-        if (helpModal) {
-            helpModal.addEventListener('click', (e) => {
-                if (e.target === helpModal) {
-                    helpModal.classList.add('hidden');
-                }
-            });
-        }
 
         // OpenAI Help Modal
         const openaiHelpBtn = document.getElementById('btn-openai-help');
