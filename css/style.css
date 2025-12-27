@@ -1483,6 +1483,10 @@ textarea {
     border: none;
 }
 
+.full-width-btn+.full-width-btn {
+    margin-top: 10px;
+}
+
 .btn-primary {
     background-color: var(--primary-color);
     color: white;

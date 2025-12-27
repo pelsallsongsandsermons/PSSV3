@@ -156,7 +156,7 @@ export class TranscriptionService {
                                 padding-left: 10pt; 
                                 margin-left: 0; 
                                 font-style: italic; 
-                                color: #666; 
+                                color: #000; 
                             }
                         </style>
                     </head>
@@ -164,7 +164,7 @@ export class TranscriptionService {
                     </html>
                 `;
                 blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
-                finalFilename += '.doc';
+                finalFilename += '.docx';
                 break;
 
             case 'pdf':
@@ -209,6 +209,13 @@ export class TranscriptionService {
                     }
 
                     doc.setFontSize(fontSize);
+                    doc.setTextColor(0, 0, 0); // Ensure black text
+
+                    // Clean markdown formatting from the line text for PDF
+                    const cleanText = lineText
+                        .replace(/\*\*(.+?)\*\*/g, '$1') // Bold
+                        .replace(/\*(.+?)\*/g, '$1');    // Italic
+
                     if (isBold && isItalic) doc.setFont('helvetica', 'bolditalic');
                     else if (isBold) doc.setFont('helvetica', 'bold');
                     else if (isItalic) doc.setFont('helvetica', 'italic');
@@ -216,7 +223,7 @@ export class TranscriptionService {
 
                     const currentMargin = isQuote ? margin + 10 : margin;
                     const currentMaxWidth = isQuote ? maxWidth - 10 : maxWidth;
-                    const wrappedLines = doc.splitTextToSize(lineText, currentMaxWidth);
+                    const wrappedLines = doc.splitTextToSize(cleanText, currentMaxWidth);
                     const lineHeight = fontSize * 0.6;
 
                     if (isQuote) {
