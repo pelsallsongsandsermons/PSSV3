@@ -115,8 +115,11 @@ export class TranscriptionService {
             return md
                 .replace(/^## (.+)$/gm, '\n--- $1 ---\n')  // H2 to dashed title
                 .replace(/^# (.+)$/gm, '\n=== $1 ===\n')   // H1 to double dashed
-                .replace(/\*\*(.+?)\*\*/g, '$1')            // Bold
-                .replace(/\*(.+?)\*/g, '$1');               // Italic
+                .replace(/\*\*(.+?)\*\*/g, '$1')            // Bold **
+                .replace(/__(.+?)__/g, '$1')              // Bold __
+                .replace(/\*(.+?)\*/g, '$1')               // Italic *
+                .replace(/_(.+?)_/g, '$1')                 // Italic _
+                .replace(/\^(.+?)\^/g, '$1');              // Superscript ^
         };
 
         // Convert markdown to HTML
@@ -128,6 +131,11 @@ export class TranscriptionService {
             return md
                 .replace(/^## (.+)$/gm, '<h2>$1</h2>')
                 .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.+?)__/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/_(.+?)_/g, '<em>$1</em>')
+                .replace(/\^(.+?)\^/g, '<em>$1</em>') // Treating superscript as italics/emphasis
                 .replace(/\n\n/g, '</p><p>')
                 .replace(/\n/g, '<br>');
         };
@@ -147,9 +155,10 @@ export class TranscriptionService {
                     <head>
                         <meta charset='utf-8'>
                         <style>
-                            body { font-family: Calibri, sans-serif; font-size: 12pt; line-height: 1.6; }
+                            body { font-family: Calibri, sans-serif; font-size: 12pt; line-height: 1.6; color: #000; }
                             h1 { font-size: 18pt; color: #333; margin-top: 20pt; margin-bottom: 10pt; }
                             h2 { font-size: 14pt; color: #555; margin-top: 16pt; margin-bottom: 8pt; }
+                            p, em, strong, i, b, span { font-size: 12pt; }
                             p { margin-bottom: 10pt; }
                             blockquote { 
                                 border-left: 3pt solid #6c5ce7; 
@@ -213,8 +222,11 @@ export class TranscriptionService {
 
                     // Clean markdown formatting from the line text for PDF
                     const cleanText = lineText
-                        .replace(/\*\*(.+?)\*\*/g, '$1') // Bold
-                        .replace(/\*(.+?)\*/g, '$1');    // Italic
+                        .replace(/\*\*(.+?)\*\*/g, '$1') // Bold **
+                        .replace(/__(.+?)__/g, '$1')    // Bold __
+                        .replace(/\*(.+?)\*/g, '$1')     // Italic *
+                        .replace(/_(.+?)_/g, '$1')       // Italic _
+                        .replace(/\^(.+?)\^/g, '$1');    // Superscript ^
 
                     if (isBold && isItalic) doc.setFont('helvetica', 'bolditalic');
                     else if (isBold) doc.setFont('helvetica', 'bold');
